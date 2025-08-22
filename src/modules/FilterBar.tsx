@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { Filter } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
-import type { PropertyFilters } from '@/types/property'
+import { Button } from '../components/ui/Button'
+import { Badge } from '../components/ui/Badge'
+import type { PropertyFilters } from '../types/property'
 
 interface FilterBarProps {
   filters: Partial<PropertyFilters>

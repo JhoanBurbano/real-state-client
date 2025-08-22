@@ -12,7 +12,7 @@ import {
   Linkedin,
   Youtube,
 } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+import { Button } from '../ui/Button'
 import { Input } from '@/components/ui/Input'
 
 const quickLinks = [

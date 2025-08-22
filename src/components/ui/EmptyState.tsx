@@ -1,6 +1,6 @@
 'use client'
 
-import { Button } from '@/components/ui/Button'
+import { Button } from './Button'
 import { Search, Heart, Home, AlertCircle } from 'lucide-react'
 
 interface EmptyStateProps {

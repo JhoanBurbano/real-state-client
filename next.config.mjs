@@ -23,10 +23,13 @@ const nextConfig = {
       },
     ],
   },
-  webpack: config => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
+  webpack: (config, { isServer }) => {
+    // Resolver fallbacks para Node.js
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      }
     }
     return config
   },

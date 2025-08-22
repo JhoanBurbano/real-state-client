@@ -1,4 +1,4 @@
-import type { Property, Agent, Lead } from '@/types/property'
+import type { Property, Agent, Lead } from '../types/property'
 
 export const MOCK_AGENTS: Agent[] = [
   {

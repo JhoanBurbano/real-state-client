@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { Search, MapPin, DollarSign, Home, Star } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+import { Button } from '../ui/Button'
 import { Input } from '@/components/ui/Input'
-import { PropertyCard } from '@/components/ui/PropertyCard'
+import { PropertyCard } from '../ui/PropertyCard'
 import { FilterBar } from '@/modules/FilterBar'
-import { useProperties } from '@/hooks/useProperties'
-import { useFavorites } from '@/hooks/useFavorites'
-import { EmptyState } from '@/components/ui/EmptyState'
+import { useProperties } from '../../hooks/useProperties'
+import { useFavorites } from '../../hooks/useFavorites'
+import { EmptyState } from '../ui/EmptyState'
 import { PropertyCardSkeleton } from '@/components/ui/PropertySkeleton'
-import type { PropertyFilters } from '@/types/property'
+import type { PropertyFilters } from '../../types/property'
 import { ImageWithFallback } from '../ui/ImageWithFallback'
 
 export function HomePage() {
