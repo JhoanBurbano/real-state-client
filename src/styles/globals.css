@@ -1,361 +1,53 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
-:root {
-  /* MILLION Design System - Luxury Real Estate */
-  
-  /* Colors - Semantic Light Theme */
-  --bg: #FFFFFF;
-  --surface: #F7F7F8;
-  --surface-elev: #FFFFFF;
-  --text: #1A1A1A;
-  --text-muted: #5B616E;
-  --line: rgba(0,0,0,0.08);
-  --accent: #A78047;
-  --on-accent: #FFFFFF;
-  --success: #249F6A;
-  --warning: #B77816;
-  --error: #C94040;
-  --info: #2E6DD9;
-  
-  /* Radius */
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-pill: 9999px;
-  
-  /* Shadows - Enhanced Luxury Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 16px 0 rgba(0,0,0,0.10);
-  --shadow-lg: 0 16px 40px 0 rgba(0,0,0,0.12);
-  --shadow-luxury-sm: 0 2px 8px 0 rgba(167,128,71,0.08), 0 1px 1px 0 rgba(0,0,0,0.05);
-  --shadow-luxury-md: 0 8px 32px 0 rgba(167,128,71,0.12), 0 2px 8px 0 rgba(0,0,0,0.08);
-  --shadow-luxury-lg: 0 20px 60px 0 rgba(167,128,71,0.15), 0 8px 32px 0 rgba(0,0,0,0.10);
-  --shadow-luxury-xl: 0 32px 80px 0 rgba(167,128,71,0.20), 0 12px 40px 0 rgba(0,0,0,0.12);
-  
-  /* Spacing Scale */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
-  --space-20: 80px;
-  
-  /* Typography */
-  --font-brand: 'Playfair Display', serif;
-  --font-base: 'Inter', sans-serif;
-  
-  /* Font Sizes */
-  --text-body: 16px;
-  --text-h6: 18px;
-  --text-h5: 20px;
-  --text-h4: 24px;
-  --text-h3: 30px;
-  --text-h2: 48px;
-  --text-h1: 60px;
-  
-  /* Line Heights */
-  --leading-tight: 1.15;
-  --leading-base: 1.5;
-  
-  /* Premium Gradients */
-  --gradient-luxury: linear-gradient(145deg, rgba(167,128,71,0.1) 0%, rgba(167,128,71,0.05) 100%);
-  --gradient-glass: linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(247,247,248,0.90) 100%);
-  --gradient-shimmer: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  
-  /* Legacy compatibility */
-  --font-size: 14px;
-  --background: var(--bg);
-  --foreground: var(--text);
-  --card: var(--surface-elev);
-  --card-foreground: var(--text);
-  --popover: var(--surface-elev);
-  --popover-foreground: var(--text);
-  --primary: var(--accent);
-  --primary-foreground: var(--on-accent);
-  --secondary: var(--surface);
-  --secondary-foreground: var(--text);
-  --muted: var(--surface);
-  --muted-foreground: var(--text-muted);
-  --accent-color: var(--accent);
-  --accent-foreground: var(--on-accent);
-  --destructive: var(--error);
-  --destructive-foreground: var(--on-accent);
-  --border: var(--line);
-  --input: transparent;
-  --input-background: var(--surface);
-  --switch-background: #cbced4;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --ring: var(--accent);
-  --radius: var(--radius-md);
+body {
+  @apply bg-bg text-text;
+  font-family: var(--font-inter);
 }
 
-.dark {
-  --bg: #1A1A1A;
-  --surface: #2A2A2A;
-  --surface-elev: #333333;
-  --text: #FFFFFF;
-  --text-muted: #A0A0A0;
-  --line: rgba(255,255,255,0.08);
-  --accent: #D4AF37;
-  --on-accent: #1A1A1A;
-  
-  --gradient-glass: linear-gradient(145deg, rgba(51,51,51,0.95) 0%, rgba(42,42,42,0.90) 100%);
-  --shadow-luxury-sm: 0 2px 8px 0 rgba(212,175,55,0.08), 0 1px 1px 0 rgba(0,0,0,0.20);
-  --shadow-luxury-md: 0 8px 32px 0 rgba(212,175,55,0.12), 0 2px 8px 0 rgba(0,0,0,0.25);
-  --shadow-luxury-lg: 0 20px 60px 0 rgba(212,175,55,0.15), 0 8px 32px 0 rgba(0,0,0,0.30);
-  --shadow-luxury-xl: 0 32px 80px 0 rgba(212,175,55,0.20), 0 12px 40px 0 rgba(0,0,0,0.35);
-  
-  --background: var(--bg);
-  --foreground: var(--text);
-  --card: var(--surface-elev);
-  --card-foreground: var(--text);
-  --popover: var(--surface-elev);
-  --popover-foreground: var(--text);
-  --primary: var(--accent);
-  --primary-foreground: var(--on-accent);
-  --secondary: var(--surface);
-  --secondary-foreground: var(--text);
-  --muted: var(--surface);
-  --muted-foreground: var(--text-muted);
-  --accent-color: var(--accent);
-  --accent-foreground: var(--on-accent);
-  --destructive: var(--error);
-  --destructive-foreground: var(--on-accent);
-  --border: var(--line);
-  --input: var(--surface);
-  --ring: var(--accent);
+@theme {
+  --font-inter: 'Inter', system-ui, sans-serif;
+  --font-playfair: 'Playfair Display', serif;
+
+  --font-inter: 'Inter', system-ui, sans-serif;
+  --font-playfair: 'Playfair Display', serif;
+
+  /* MILLION Brand Colors */
+  --color-bg: #FFFFFF;
+  --color-surface: #F7F7F8;
+  --color-surface-elev: #FFFFFF;
+  --color-text: #1A1A1A;
+  --color-text-muted: #5B616E;
+  --color-line: rgba(0,0,0,0.08);
+  --color-accent: #A78047;
+  --color-on-accent: #FFFFFF;
+  --color-success: #249F6A;
+  --color-warning: #B77816;
+  --color-error: #C94040;
+  --color-info: #2E6DD9;
+
+  /* Dark Mode Colors */
+  --color-dark-bg: #1A1A1A;
+  --color-dark-surface: #2A2A2A;
+  --color-dark-surface-elev: #333333;
+  --color-dark-text: #FFFFFF;
+  --color-dark-text-muted: #A0A0A0;
+  --color-dark-line: rgba(255,255,255,0.08);
+  --color-dark-accent: #D4AF37;
+  --color-dark-on-accent: #1A1A1A;
 }
 
-@theme inline {
-  --color-bg: var(--bg);
-  --color-surface: var(--surface);
-  --color-surface-elev: var(--surface-elev);
-  --color-text: var(--text);
-  --color-text-muted: var(--text-muted);
-  --color-line: var(--line);
-  --color-accent: var(--accent);
-  --color-on-accent: var(--on-accent);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-error: var(--error);
-  --color-info: var(--info);
-  
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent-color: var(--accent-color);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-input-background: var(--input-background);
-  --color-switch-background: var(--switch-background);
-  --color-ring: var(--ring);
-  
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --radius-lg: var(--radius-lg);
-  --radius-xl: var(--radius-xl);
-  --radius-pill: var(--radius-pill);
+.btn-luxury {
+  @apply bg-accent text-on-accent px-3 py-2 rounded-md font-medium transition-all duration-300 hover:bg-accent/90;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-
-  body {
-    @apply bg-bg text-text;
-    font-family: var(--font-base);
-  }
+.card-luxury {
+  @apply bg-surface-elev border border-line shadow-sm;
 }
 
-/**
- * MILLION Typography System
- */
-@layer base {
-  .font-brand {
-    font-family: var(--font-brand);
-  }
-  
-  .font-base {
-    font-family: var(--font-base);
-  }
-  
-  .text-h1 {
-    font-size: var(--text-h1);
-    line-height: var(--leading-tight);
-    font-family: var(--font-brand);
-    font-weight: 600;
-  }
-  
-  .text-h2 {
-    font-size: var(--text-h2);
-    line-height: var(--leading-tight);
-    font-family: var(--font-brand);
-    font-weight: 600;
-  }
-  
-  .text-h3 {
-    font-size: var(--text-h3);
-    line-height: var(--leading-tight);
-    font-family: var(--font-brand);
-    font-weight: 600;
-  }
-  
-  .text-h4 {
-    font-size: var(--text-h4);
-    line-height: var(--leading-base);
-    font-family: var(--font-brand);
-    font-weight: 500;
-  }
-  
-  .text-h5 {
-    font-size: var(--text-h5);
-    line-height: var(--leading-base);
-    font-family: var(--font-base);
-    font-weight: 600;
-  }
-  
-  .text-h6 {
-    font-size: var(--text-h6);
-    line-height: var(--leading-base);
-    font-family: var(--font-base);
-    font-weight: 600;
-  }
-  
-  .text-body {
-    font-size: var(--text-body);
-    line-height: var(--leading-base);
-    font-family: var(--font-base);
-    font-weight: 400;
-  }
-}
+.badge-luxury {
+  @apply bg-accent text-on-accent px-3 py-2 rounded-md font-medium transition-all duration-300;
 
-/**
- * MILLION Premium Utilities
- */
-@layer utilities {
-  .space-1 { margin: var(--space-1); }
-  .space-2 { margin: var(--space-2); }
-  .space-3 { margin: var(--space-3); }
-  .space-4 { margin: var(--space-4); }
-  .space-5 { margin: var(--space-5); }
-  .space-6 { margin: var(--space-6); }
-  .space-8 { margin: var(--space-8); }
-  .space-10 { margin: var(--space-10); }
-  .space-12 { margin: var(--space-12); }
-  .space-16 { margin: var(--space-16); }
-  .space-20 { margin: var(--space-20); }
-  
-  .shadow-luxury-sm { box-shadow: var(--shadow-luxury-sm); }
-  .shadow-luxury-md { box-shadow: var(--shadow-luxury-md); }
-  .shadow-luxury-lg { box-shadow: var(--shadow-luxury-lg); }
-  .shadow-luxury-xl { box-shadow: var(--shadow-luxury-xl); }
-  
-  .bg-glass { 
-    background: var(--gradient-glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-  
-  .bg-luxury { background: var(--gradient-luxury); }
-  
-  .animate-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    animation: shimmer 2s infinite;
-  }
-  
-  .text-gradient {
-    background: linear-gradient(135deg, var(--accent), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .border-luxury {
-    border: 1px solid rgba(167, 128, 71, 0.2);
-    position: relative;
-  }
-  
-  .border-luxury::after {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(167, 128, 71, 0.3), transparent, rgba(167, 128, 71, 0.1));
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: xor;
-    -webkit-mask-composite: xor;
-    pointer-events: none;
-  }
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
-}
-
-/**
- * Premium Hover Effects
- */
-@layer components {
-  .luxury-hover {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .luxury-hover:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: var(--shadow-luxury-lg);
-  }
-  
-  .glass-morphism {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-  }
-  
-  .premium-gradient {
-    background: linear-gradient(135deg, var(--accent) 0%, rgba(167, 128, 71, 0.8) 100%);
-  }
-  
-  .luxury-card {
-    background: var(--gradient-glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(167, 128, 71, 0.1);
-    box-shadow: var(--shadow-luxury-md);
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .luxury-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: var(--shadow-luxury-lg);
-    border-color: rgba(167, 128, 71, 0.2);
-  }
-}
-
-html {
-  font-size: var(--font-size);
 }
