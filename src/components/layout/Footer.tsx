@@ -12,8 +12,8 @@ import {
   Linkedin,
   Youtube,
 } from 'lucide-react'
-import { Button } from '../ui/Button'
-import { Input } from '../ui/Input'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 const quickLinks = [
   { name: 'About Us', href: '/about' },

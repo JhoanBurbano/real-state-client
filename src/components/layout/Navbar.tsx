@@ -4,9 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X, Search, User, Heart } from 'lucide-react'
-import { Button } from '../ui/Button'
-import { ThemeToggle } from '../ui/ThemeToggle'
-import { LanguageToggle } from '../ui/LanguageToggle'
+import { Button } from '@/components/ui/Button'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { LanguageToggle } from '@/components/ui/LanguageToggle'
 
 const navigation = [
   { name: 'Home', href: '/' },

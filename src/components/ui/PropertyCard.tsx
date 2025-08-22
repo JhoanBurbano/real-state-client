@@ -6,9 +6,9 @@ import Link from 'next/link'
 import { Heart, Bed, Bath, Square, MapPin, Star } from 'lucide-react'
 import { Button } from './Button'
 import { Badge } from './Badge'
-import { formatPrice, formatSquareFeet, truncateText } from '../../lib/utils'
-import { useFavorites } from '../../hooks/useFavorites'
-import type { Property } from '../../types/property'
+import { formatPrice, formatSquareFeet, truncateText } from '@/lib/utils'
+import { useFavorites } from '@/hooks/useFavorites'
+import type { Property } from '@/types/property'
 
 interface PropertyCardProps {
   property: Property

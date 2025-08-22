@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { X, DollarSign, Bed, Bath, MapPin, Home } from 'lucide-react'
-import { Button } from '@/ui/Button'
+import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { useProperties } from '@/../hooks/useProperties'
+import { useProperties } from '@/hooks/useProperties'
 
 interface FilterBarProps {
   filters: {
