@@ -1,290 +1,205 @@
-import useSWR from 'swr';
-import { dataService } from '../utils/dataService';
-import type { Property, PropertyFilters, ApiResponse } from '../utils/api';
+'use client'
 
-interface UsePropertiesOptions extends PropertyFilters {
-  revalidateOnFocus?: boolean;
-  revalidateOnReconnect?: boolean;
-  refreshInterval?: number;
-}
+import { useState, useEffect } from 'react'
+import { MOCK_PROPERTIES } from '@/data/mockData'
+import type { Property, PropertyFilters, FilterOptions } from '@/types/property'
 
-export function useProperties(filters: UsePropertiesOptions = {}) {
-  const {
-    revalidateOnFocus = false,
-    revalidateOnReconnect = true,
-    refreshInterval = 0,
-    ...apiFilters
-  } = filters;
+export function useProperties() {
+  const [properties, setProperties] = useState<Property[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Create a stable key for SWR based on filters
-  const key = apiFilters && Object.keys(apiFilters).length > 0 
-    ? ['properties', apiFilters] 
-    : ['properties'];
-
-  const {
-    data,
-    error,
-    isLoading,
-    isValidating,
-    mutate: revalidate
-  } = useSWR(
-    key,
-    async () => {
-      const response = await dataService.getProperties(apiFilters);
-      if (response.error) {
-        throw new Error(response.error);
-      }
-      return {
-        properties: response.data || [],
-        pagination: response.pagination
-      };
-    },
-    {
-      revalidateOnFocus,
-      revalidateOnReconnect,
-      refreshInterval,
-      errorRetryCount: 3,
-      errorRetryInterval: 1000,
-      dedupingInterval: 5000, // 5 seconds
-      onError: (error) => {
-        console.error('Error fetching properties:', error);
+  useEffect(() => {
+    const loadProperties = async () => {
+      try {
+        setLoading(true)
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        setProperties(MOCK_PROPERTIES)
+      } catch (err) {
+        console.error(err)
+        setError('Failed to load properties')
+      } finally {
+        setLoading(false)
       }
     }
-  );
+
+    loadProperties()
+  }, [])
+
+  const getProperty = (id: string): Property | undefined => {
+    return properties.find(property => property.id === id)
+  }
+
+  const filterProperties = (filters: Partial<PropertyFilters>): Property[] => {
+    return properties.filter(property => {
+      if (filters.priceRange) {
+        const [min, max] = filters.priceRange
+        if (property.price < min || property.price > max) return false
+      }
+
+      if (filters.bedrooms && filters.bedrooms.length > 0) {
+        if (!filters.bedrooms.includes(property.bedrooms)) return false
+      }
+
+      if (filters.bathrooms && filters.bathrooms.length > 0) {
+        if (!filters.bathrooms.includes(property.bathrooms)) return false
+      }
+
+      if (filters.propertyType && filters.propertyType.length > 0) {
+        if (!filters.propertyType.includes(property.type)) return false
+      }
+
+      if (filters.location && filters.location.length > 0) {
+        if (
+          !filters.location.some(loc =>
+            property.location.toLowerCase().includes(loc.toLowerCase())
+          )
+        )
+          return false
+      }
+
+      if (filters.status && filters.status.length > 0) {
+        if (!filters.status.includes(property.status)) return false
+      }
+
+      if (filters.features && filters.features.length > 0) {
+        if (
+          !filters.features.some(feature => property.features.includes(feature))
+        )
+          return false
+      }
+
+      return true
+    })
+  }
+
+  const searchProperties = (query: string): Property[] => {
+    if (!query.trim()) return properties
+
+    const searchTerm = query.toLowerCase()
+    return properties.filter(
+      property =>
+        property.title.toLowerCase().includes(searchTerm) ||
+        property.description.toLowerCase().includes(searchTerm) ||
+        property.location.toLowerCase().includes(searchTerm) ||
+        property.type.toLowerCase().includes(searchTerm)
+    )
+  }
+
+  const getFilterOptions = (): FilterOptions => {
+    const priceRanges = [
+      { label: 'Under $500K', value: [0, 500000] as [number, number] },
+      { label: '$500K - $1M', value: [500000, 1000000] as [number, number] },
+      { label: '$1M - $2M', value: [1000000, 2000000] as [number, number] },
+      { label: '$2M - $5M', value: [2000000, 5000000] as [number, number] },
+      { label: 'Over $5M', value: [5000000, Infinity] as [number, number] },
+    ]
+
+    const bedroomOptions = [
+      { label: '1+', value: 1 },
+      { label: '2+', value: 2 },
+      { label: '3+', value: 3 },
+      { label: '4+', value: 4 },
+      { label: '5+', value: 5 },
+    ]
+
+    const bathroomOptions = [
+      { label: '1+', value: 1 },
+      { label: '2+', value: 2 },
+      { label: '3+', value: 3 },
+      { label: '4+', value: 4 },
+      { label: '5+', value: 5 },
+    ]
+
+    const propertyTypes = [
+      { label: 'Apartment', value: 'apartment' },
+      { label: 'House', value: 'house' },
+      { label: 'Villa', value: 'villa' },
+      { label: 'Penthouse', value: 'penthouse' },
+      { label: 'Townhouse', value: 'townhouse' },
+      { label: 'Studio', value: 'studio' },
+    ]
+
+    const locations = Array.from(new Set(properties.map(p => p.location))).map(
+      location => ({
+        label: location,
+        value: location,
+      })
+    )
+
+    const statuses = [
+      { label: 'For Sale', value: 'forSale' },
+      { label: 'For Rent', value: 'forRent' },
+      { label: 'Sold', value: 'sold' },
+      { label: 'Rented', value: 'rented' },
+      { label: 'Pending', value: 'pending' },
+    ]
+
+    const features = Array.from(
+      new Set(properties.flatMap(p => p.features))
+    ).map(feature => ({
+      label: feature,
+      value: feature,
+    }))
+
+    return {
+      priceRanges,
+      bedroomOptions,
+      bathroomOptions,
+      propertyTypes,
+      locations,
+      statuses,
+      features,
+    }
+  }
 
   return {
-    properties: data?.properties || [],
-    pagination: data?.pagination,
-    isLoading,
-    isValidating,
-    error: error?.message || null,
-    revalidate,
-    isEmpty: !isLoading && !data?.properties?.length
-  };
+    properties,
+    loading,
+    error,
+    getProperty,
+    filterProperties,
+    searchProperties,
+    getFilterOptions,
+  }
 }
 
 export function useProperty(propertyId: string | null) {
-  const {
-    data,
-    error,
-    isLoading,
-    mutate: revalidate
-  } = useSWR(
-    propertyId ? ['property', propertyId] : null,
-    async () => {
-      if (!propertyId) return null;
-      
-      const response = await dataService.getProperty(propertyId);
-      if (response.error) {
-        throw new Error(response.error);
-      }
-      return {
-        property: response.data,
-        agent: response.agent
-      };
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      errorRetryCount: 3,
-      errorRetryInterval: 1000,
-      onError: (error) => {
-        console.error('Error fetching property:', error);
-      }
+  const [property, setProperty] = useState<Property | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!propertyId) {
+      setProperty(null)
+      setLoading(false)
+      return
     }
-  );
 
-  return {
-    property: data?.property || null,
-    agent: data?.agent || null,
-    isLoading,
-    error: error?.message || null,
-    revalidate
-  };
-}
+    const loadProperty = async () => {
+      try {
+        setLoading(true)
+        setError(null)
 
-export function useFilterOptions() {
-  const {
-    data,
-    error,
-    isLoading
-  } = useSWR(
-    'filter-options',
-    async () => {
-      const response = await dataService.getFilterOptions();
-      if (response.error) {
-        throw new Error(response.error);
-      }
-      return response.data;
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      refreshInterval: 300000, // 5 minutes
-      errorRetryCount: 2
-    }
-  );
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 300))
 
-  return {
-    filterOptions: data || null,
-    isLoading,
-    error: error?.message || null
-  };
-}
-
-export function useAgents() {
-  const {
-    data,
-    error,
-    isLoading
-  } = useSWR(
-    'agents',
-    async () => {
-      const response = await dataService.getAgents();
-      if (response.error) {
-        throw new Error(response.error);
-      }
-      return response.data;
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      refreshInterval: 600000, // 10 minutes
-      errorRetryCount: 2
-    }
-  );
-
-  return {
-    agents: data || [],
-    isLoading,
-    error: error?.message || null
-  };
-}
-
-export function useLeads(filters: any = {}) {
-  const {
-    data,
-    error,
-    isLoading,
-    mutate: revalidate
-  } = useSWR(
-    ['leads', filters],
-    async () => {
-      const response = await dataService.getLeads(filters);
-      if (response.error) {
-        throw new Error(response.error);
-      }
-      return {
-        leads: response.data || [],
-        pagination: response.pagination
-      };
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      errorRetryCount: 2,
-      onError: (error) => {
-        console.error('Error fetching leads:', error);
+        const foundProperty = MOCK_PROPERTIES.find(p => p.id === propertyId)
+        if (foundProperty) {
+          setProperty(foundProperty)
+        } else {
+          setError('Property not found')
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load property')
+      } finally {
+        setLoading(false)
       }
     }
-  );
 
-  return {
-    leads: data?.leads || [],
-    pagination: data?.pagination,
-    isLoading,
-    error: error?.message || null,
-    revalidate
-  };
-}
+    loadProperty()
+  }, [propertyId])
 
-// Hook for managing favorites
-export function useFavorites() {
-  const {
-    data: favorites,
-    mutate: revalidateFavorites
-  } = useSWR(
-    'favorites',
-    () => dataService.getFavorites(),
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      refreshInterval: 0
-    }
-  );
-
-  const addFavorite = (propertyId: string) => {
-    dataService.addFavorite(propertyId);
-    revalidateFavorites();
-  };
-
-  const removeFavorite = (propertyId: string) => {
-    dataService.removeFavorite(propertyId);
-    revalidateFavorites();
-  };
-
-  const isFavorite = (propertyId: string) => {
-    return dataService.isFavorite(propertyId);
-  };
-
-  return {
-    favorites: favorites || [],
-    addFavorite,
-    removeFavorite,
-    isFavorite,
-    revalidateFavorites
-  };
-}
-
-// Hook for connection status
-export function useConnectionStatus() {
-  const {
-    data: status,
-    mutate: revalidateStatus
-  } = useSWR(
-    'connection-status',
-    () => dataService.getConnectionStatus(),
-    {
-      refreshInterval: 10000, // Check every 10 seconds
-      revalidateOnFocus: true,
-      revalidateOnReconnect: true
-    }
-  );
-
-  return {
-    status: status || 'offline',
-    revalidateStatus
-  };
-}
-
-// Hook for service mode management
-export function useDataService() {
-  const getCurrentMode = () => dataService.getCurrentMode();
-  const switchToMock = () => dataService.switchToMock();
-  const switchToAPI = () => dataService.switchToAPI();
-  const resetData = () => dataService.resetData();
-  const addSampleLead = () => dataService.addSampleLead();
-  
-  const {
-    data: healthData,
-    mutate: revalidateHealth
-  } = useSWR(
-    'health-check',
-    () => dataService.healthCheck(),
-    {
-      refreshInterval: 30000, // Check every 30 seconds
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true
-    }
-  );
-
-  return {
-    currentMode: getCurrentMode(),
-    switchToMock,
-    switchToAPI,
-    resetData,
-    addSampleLead,
-    health: healthData,
-    revalidateHealth
-  };
+  return { property, loading, error }
 }
