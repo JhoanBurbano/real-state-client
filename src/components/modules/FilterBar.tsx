@@ -25,7 +25,8 @@ export function FilterBar({
   onClose,
 }: FilterBarProps) {
   const [localFilters, setLocalFilters] = useState(filters)
-  const { filterProperties: filterOptions } = useProperties()
+  const { getFilterOptions } = useProperties()
+  const filterOptions = getFilterOptions()
 
   const handleInputChange = (field: string, value: string) => {
     setLocalFilters(prev => ({
@@ -103,13 +104,18 @@ export function FilterBar({
               <Bed className="h-4 w-4" />
               Bedrooms
             </label>
-            <Input
-              type="number"
-              placeholder="Min Bedrooms"
+            <select
               value={localFilters.bedrooms}
               onChange={e => handleInputChange('bedrooms', e.target.value)}
-              className="text-sm"
-            />
+              className="w-full px-3 py-2 border border-line rounded-md focus:ring-2 focus:ring-accent focus:border-transparent text-sm"
+            >
+              <option value="">All Bedrooms</option>
+              {filterOptions.bedroomOptions.map((option: any) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Bathrooms */}
@@ -118,13 +124,18 @@ export function FilterBar({
               <Bath className="h-4 w-4" />
               Bathrooms
             </label>
-            <Input
-              type="number"
-              placeholder="Min Bathrooms"
+            <select
               value={localFilters.bathrooms}
               onChange={e => handleInputChange('bathrooms', e.target.value)}
-              className="text-sm"
-            />
+              className="w-full px-3 py-2 border border-line rounded-md focus:ring-2 focus:ring-accent focus:border-transparent text-sm"
+            >
+              <option value="">All Bathrooms</option>
+              {filterOptions.bathroomOptions.map((option: any) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Property Type */}
@@ -136,12 +147,12 @@ export function FilterBar({
             <select
               value={localFilters.propertyType}
               onChange={e => handleInputChange('propertyType', e.target.value)}
-              className="w-full h-10 px-3 py-2 text-sm border border-line rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
+              className="w-full px-3 py-2 border border-line rounded-md focus:ring-2 focus:ring-accent focus:border-transparent text-sm"
             >
               <option value="">All Types</option>
               {filterOptions.propertyTypes.map((type: any) => (
-                <option key={type.type} value={type.type}>
-                  {type.label} ({type.count})
+                <option key={type.value} value={type.value}>
+                  {type.label}
                 </option>
               ))}
             </select>
@@ -156,12 +167,12 @@ export function FilterBar({
             <select
               value={localFilters.location}
               onChange={e => handleInputChange('location', e.target.value)}
-              className="w-full h-10 px-3 py-2 text-sm border border-line rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2"
+              className="w-full px-3 py-2 border border-line rounded-md focus:ring-2 focus:ring-accent focus:border-transparent text-sm"
             >
               <option value="">All Locations</option>
               {filterOptions.locations.map((location: any) => (
-                <option key={location.city} value={location.city}>
-                  {location.city} ({location.count})
+                <option key={location.value} value={location.value}>
+                  {location.label}
                 </option>
               ))}
             </select>
@@ -169,34 +180,16 @@ export function FilterBar({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border-line/20">
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" onClick={handleReset}>
-              Reset
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClearFilters}
-              className="text-text-muted hover:text-accent"
-            >
-              Clear All
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              variant="default"
-              size="sm"
-              onClick={handleApplyFilters}
-              className="bg-accent text-on-accent hover:bg-accent/90"
-            >
-              Apply Filters
-            </Button>
-          </div>
+        <div className="flex items-center justify-end space-x-3 mt-6 pt-6 border-t border-line/20">
+          <Button variant="outline" size="sm" onClick={handleReset}>
+            Reset
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleClearFilters}>
+            Clear All
+          </Button>
+          <Button size="sm" onClick={handleApplyFilters}>
+            Apply Filters
+          </Button>
         </div>
       </div>
     </div>

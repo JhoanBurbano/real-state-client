@@ -9,7 +9,8 @@ const buttonVariants = cva(
       variant: {
         default: 'bg-accent text-on-accent hover:bg-accent/90',
         destructive: 'bg-error text-on-accent hover:bg-error/90',
-        outline: 'border border-line bg-transparent hover:bg-accent hover:text-accent',
+        outline:
+          'border border-line bg-transparent hover:bg-accent hover:text-accent',
         secondary: 'bg-surface text-text hover:bg-surface/80',
         ghost: 'hover:bg-accent/10 hover:text-accent',
         link: 'text-accent underline-offset-4 hover:underline',
@@ -29,7 +30,7 @@ const buttonVariants = cva(
       variant: 'default',
       size: 'default',
     },
-  },
+  }
 )
 
 export interface ButtonProps
@@ -42,9 +43,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? React.Fragment : 'button'
     return (
-      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
     )
-  },
+  }
 )
 
 Button.displayName = 'Button'

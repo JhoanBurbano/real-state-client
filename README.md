@@ -1,31 +1,29 @@
-# MILLION Real Estate
+# MILLION Luxury Real Estate
 
-A luxury real estate platform built with Next.js 14, featuring modern design, internationalization, and comprehensive property management capabilities.
+A modern, responsive luxury real estate platform built with Next.js 14, featuring a sophisticated design system and exceptional user experience.
 
-## 🚀 Features
+## ✨ Features
 
-- **Modern Tech Stack**: Next.js 14 with App Router, TypeScript, and Tailwind CSS v4
-- **Luxury Design System**: Custom design tokens and components for premium real estate
-- **Internationalization**: Full i18n support for English and Spanish
-- **Responsive Design**: Mobile-first approach with luxury aesthetics
-- **Property Management**: Comprehensive property search, filtering, and display
-- **Favorites System**: User favorites management with localStorage
-- **Accessibility**: WCAG compliant with skip links and ARIA attributes
-- **Testing**: Jest for unit tests and Playwright for E2E testing
-- **Performance**: Optimized images, lazy loading, and modern web vitals
+- **Modern Framework**: Next.js 14 with App Router
+- **Responsive Design**: Mobile-first approach with Tailwind CSS v4
+- **Design System**: Comprehensive component library with luxury aesthetics
+- **Dark Mode**: Seamless theme switching with next-themes
+- **Performance**: Optimized with Next.js Image and lazy loading
+- **Accessibility**: WCAG compliant with skip links and semantic HTML
+- **Testing**: Comprehensive test suite with Jest and Playwright
+- **Code Quality**: ESLint, Prettier, and Stylelint for consistent code
 
-## 🛠️ Tech Stack
+## 🚀 Tech Stack
 
-- **Framework**: Next.js 14
+- **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS v4
-- **State Management**: React Hooks
-- **Internationalization**: next-intl
+- **Styling**: Tailwind CSS v4, PostCSS, Autoprefixer
 - **Theming**: next-themes
+- **UI Components**: Radix UI components, custom components
 - **Icons**: Lucide React
-- **Testing**: Jest + Playwright
-- **Linting**: ESLint
-- **Formatting**: Prettier
+- **Utilities**: class-variance-authority, clsx, tailwind-merge
+- **Testing**: Jest (unit), React Testing Library, Playwright (E2E)
+- **Code Quality**: ESLint, Prettier, Stylelint
 
 ## 📁 Project Structure
 
@@ -37,15 +35,13 @@ src/
 ├── components/             # Reusable components
 │   ├── ui/                # Base UI components
 │   ├── layout/            # Layout components
-│   ├── pages/             # Page-specific components
-│   └── providers/         # Context providers
+│   └── pages/             # Page-specific components
 ├── hooks/                  # Custom React hooks
-├── modules/                # Feature modules
 ├── types/                  # TypeScript type definitions
-├── data/                   # Mock data and utilities
-├── lib/                    # Utility functions
-├── i18n/                   # Internationalization
-└── styles/                 # Global styles
+├── data/                   # Mock data and constants
+├── utils/                  # Utility functions
+├── styles/                 # Global styles and CSS
+└── lib/                    # Third-party library configurations
 ```
 
 ## 🚀 Getting Started
@@ -57,28 +53,29 @@ src/
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository**
 
-```bash
-git clone https://github.com/your-username/million-realestate.git
-cd million-realestate
-```
+   ```bash
+   git clone <repository-url>
+   cd real-state-client
+   ```
 
-2. Install dependencies:
+2. **Install dependencies**
 
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
-3. Run the development server:
+3. **Run development server**
 
-```bash
-npm run dev
-```
+   ```bash
+   npm run dev
+   ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+4. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-## 📝 Available Scripts
+## 📜 Available Scripts
 
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
@@ -86,106 +83,90 @@ npm run dev
 - `npm run lint` - Run ESLint
 - `npm run test` - Run unit tests
 - `npm run test:watch` - Run tests in watch mode
-- `npm run test:e2e` - Run E2E tests with Playwright
+- `npm run test:coverage` - Generate test coverage report
+- `npm run test:e2e` - Run end-to-end tests
+- `npm run format` - Format code with Prettier
+- `npm run stylelint` - Run Stylelint
 - `npm run type-check` - Run TypeScript type checking
-
-## 🌍 Internationalization
-
-The application supports multiple languages:
-
-- **English** (en) - Default language
-- **Spanish** (es) - Full translation support
-
-Language switching is available through the language toggle in the navigation bar.
 
 ## 🎨 Design System
 
-### Colors
+### Color Palette
 
-- **Primary**: Luxury Gold (#A78047)
-- **Surface**: Clean whites and grays
-- **Text**: High contrast for readability
-- **Accent**: Strategic use of brand colors
+- **Primary**: MILLION brand colors with luxury aesthetics
+- **Surface**: Multiple elevation levels for depth
+- **Text**: High contrast ratios for accessibility
+- **Accent**: Strategic use of accent colors for CTAs
 
 ### Typography
 
-- **Brand Font**: Playfair Display (serif)
-- **Base Font**: Inter (sans-serif)
-- **Hierarchy**: Clear heading scale from H1 to H6
+- **Headings**: Playfair Display for luxury feel
+- **Body**: Inter for excellent readability
+- **Hierarchy**: Clear typographic scale
 
 ### Components
 
-- **Button**: Multiple variants (default, luxury, glass, outline)
-- **Card**: Luxury card design with hover effects
-- **Input**: Consistent form styling
-- **Badge**: Status and feature indicators
+- **Button**: Multiple variants (default, outline, luxury, glass)
+- **Card**: Property cards with hover effects
+- **Badge**: Status and type indicators
+- **Input**: Form inputs with focus states
+- **Skeleton**: Loading state components
 
 ## 🧪 Testing
 
 ### Unit Tests
 
-Tests are written with Jest and React Testing Library:
-
-```bash
-npm run test
-```
+- **Framework**: Jest with React Testing Library
+- **Coverage**: Comprehensive component testing
+- **Mocking**: Proper mocking of external dependencies
 
 ### E2E Tests
 
-End-to-end tests use Playwright:
-
-```bash
-npm run test:e2e
-```
+- **Framework**: Playwright
+- **Coverage**: Critical user journeys
+- **Browsers**: Chrome, Firefox, Safari
 
 ## 📱 Responsive Design
 
-The application is fully responsive with breakpoints:
-
-- **Mobile**: 320px - 768px
-- **Tablet**: 768px - 1024px
-- **Desktop**: 1024px+
+- **Mobile First**: Designed for mobile devices first
+- **Breakpoints**: Tailwind CSS responsive utilities
+- **Touch Friendly**: Optimized for touch interactions
+- **Performance**: Optimized images and lazy loading
 
 ## ♿ Accessibility
 
-- WCAG 2.1 AA compliance
-- Skip links for keyboard navigation
-- Proper ARIA labels and roles
-- High contrast mode support
-- Screen reader optimization
+- **WCAG Compliance**: Following accessibility guidelines
+- **Skip Links**: Keyboard navigation support
+- **Semantic HTML**: Proper HTML structure
+- **ARIA Labels**: Screen reader support
+- **Focus Management**: Visible focus indicators
 
-## 🚀 Performance
+## ⚡ Performance
 
-- Next.js Image optimization
-- Lazy loading for components
-- Efficient bundle splitting
-- Modern web vitals optimization
-- SEO best practices
+- **Next.js Image**: Optimized image loading
+- **Lazy Loading**: Components load when needed
+- **Code Splitting**: Automatic route-based splitting
+- **Bundle Analysis**: Optimized bundle sizes
 
-## 🔧 Configuration
+## ⚙️ Configuration
 
-### Environment Variables
+### Tailwind CSS v4
 
-Create a `.env.local` file:
+- **Custom Colors**: MILLION brand palette
+- **Custom Spacing**: Consistent spacing scale
+- **Custom Animations**: Luxury micro-interactions
+- **Dark Mode**: Seamless theme switching
 
-```env
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_API_URL=your-api-url
-```
+### Next.js
 
-### Tailwind Configuration
-
-Custom design tokens are defined in `tailwind.config.ts`:
-
-- Color palette
-- Typography scale
-- Spacing system
-- Animation definitions
-- Custom utilities
+- **App Router**: Latest Next.js routing
+- **TypeScript**: Strict type checking
+- **ESLint**: Code quality enforcement
+- **PostCSS**: Advanced CSS processing
 
 ## 📊 Data Structure
 
-### Property Model
+### Properties
 
 ```typescript
 interface Property {
@@ -196,47 +177,48 @@ interface Property {
   location: string
   bedrooms: number
   bathrooms: number
-  squareFeet: number
-  status: 'forSale' | 'forRent' | 'sold' | 'rented' | 'pending'
-  type: 'apartment' | 'house' | 'villa' | 'penthouse' | 'townhouse' | 'studio'
-  images: string[]
+  sqft: number
+  type: string
+  status: string
   features: string[]
-  amenities: string[]
-  agentId: string
-  coordinates?: { latitude: number; longitude: number }
+  images: string[]
+  agent: Agent
 }
 ```
 
-## 🌟 Key Features
+### Filters
 
-### Property Search
+```typescript
+interface PropertyFilters {
+  priceRange: [number, number]
+  bedrooms: number[]
+  bathrooms: number[]
+  propertyType: string[]
+  location: string[]
+  status: string[]
+  features: string[]
+}
+```
 
-- Full-text search across titles, descriptions, and locations
-- Advanced filtering by price, bedrooms, bathrooms, and type
-- Real-time search results
+## 🔑 Key Features
 
-### Favorites System
+- **Property Search**: Advanced filtering and search
+- **Favorites**: Save and manage favorite properties
+- **Responsive Grid**: Adaptive property grid layout
+- **Theme Toggle**: Light/dark mode switching
+- **Filter Panel**: Comprehensive property filtering
+- **Hero Section**: Engaging landing experience
+- **Stats Display**: Company statistics showcase
 
-- Add/remove properties to favorites
-- Persistent storage with localStorage
-- Favorites count display
+## 🚀 Future Enhancements
 
-### Responsive Navigation
-
-- Mobile-friendly navigation menu
-- Language and theme toggles
-- Smooth animations and transitions
-
-## 🔮 Future Enhancements
-
-- [ ] User authentication and profiles
-- [ ] Advanced property analytics
-- [ ] Virtual tour integration
-- [ ] Agent dashboard
-- [ ] Property comparison tools
-- [ ] Advanced search algorithms
-- [ ] Real-time notifications
-- [ ] Mobile app development
+- **Property Details**: Individual property pages
+- **Agent Profiles**: Detailed agent information
+- **Contact Forms**: Lead generation forms
+- **Map Integration**: Interactive property maps
+- **Advanced Search**: Saved searches and alerts
+- **User Accounts**: User registration and profiles
+- **Admin Panel**: Content management system
 
 ## 🤝 Contributing
 
@@ -249,23 +231,12 @@ interface Property {
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
-- Next.js team for the amazing framework
-- Tailwind CSS for the utility-first approach
-- Lucide for the beautiful icons
-- The real estate community for inspiration
-
-## 📞 Support
-
-For support and questions:
-
-- Create an issue in the repository
-- Contact the development team
-- Check the documentation
-
----
-
-Built with ❤️ by the MILLION Real Estate team
+- **Next.js Team** for the amazing framework
+- **Tailwind CSS** for the utility-first CSS framework
+- **Radix UI** for accessible component primitives
+- **Lucide** for beautiful icons
+- **MILLION Brand** for the luxury design inspiration
