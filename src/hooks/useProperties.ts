@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { MOCK_PROPERTIES } from '../data/mockData'
-import type { Property, PropertyFilters, FilterOptions } from '../types/property'
+import { MOCK_PROPERTIES } from '@/data/mockData'
+import type { Property, PropertyFilters, FilterOptions } from '@/types/property'
 
 export function useProperties() {
   const [properties, setProperties] = useState<Property[]>([])

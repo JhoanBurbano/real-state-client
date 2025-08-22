@@ -1,4 +1,4 @@
-import type { Property, Agent, Lead } from '../types/property'
+import type { Property, Agent, Lead } from '@/types/property'
 
 export const MOCK_AGENTS: Agent[] = [
   {
@@ -224,8 +224,6 @@ export const MOCK_PROPERTIES: Property[] = [
     coordinates: { latitude: 34.09, longitude: -118.3617 },
   },
 ]
-
-
 
 export const MOCK_LEADS: Lead[] = [
   {

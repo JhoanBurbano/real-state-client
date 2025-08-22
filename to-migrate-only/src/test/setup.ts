@@ -1,24 +1,24 @@
-import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import '@testing-library/jest-dom'
+import { vi } from 'vitest'
 
 // Mock IntersectionObserver
-global.IntersectionObserver = vi.fn().mockImplementation((callback) => ({
+global.IntersectionObserver = vi.fn().mockImplementation(callback => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
-}));
+}))
 
 // Mock ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation((callback) => ({
+global.ResizeObserver = vi.fn().mockImplementation(callback => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
-}));
+}))
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation((query) => ({
+  value: vi.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
@@ -28,16 +28,16 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-});
+})
 
 // Mock Supabase environment variables
-vi.mock('../utils/supabase/info', () => ({
+vi.mock('@/utils/supabase/info', () => ({
   projectId: 'test-project',
   publicAnonKey: 'test-key',
-}));
+}))
 
 // Mock API service
-vi.mock('../utils/api', () => ({
+vi.mock('@/utils/api', () => ({
   apiService: {
     getProperties: vi.fn().mockResolvedValue({
       data: [
@@ -110,7 +110,7 @@ vi.mock('../utils/api', () => ({
     removeFavorite: vi.fn(),
     getFavorites: vi.fn().mockReturnValue([]),
   },
-}));
+}))
 
 // Mock SWR
 vi.mock('swr', () => ({
@@ -121,7 +121,7 @@ vi.mock('swr', () => ({
     isValidating: false,
     mutate: vi.fn(),
   })),
-}));
+}))
 
 // Global test utilities
 global.testUtils = {
@@ -143,4 +143,4 @@ global.testUtils = {
     createdAt: '2025-01-01T00:00:00Z',
     updatedAt: '2025-01-01T00:00:00Z',
   },
-};
+}

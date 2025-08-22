@@ -13,7 +13,7 @@ import {
   Youtube,
 } from 'lucide-react'
 import { Button } from '../ui/Button'
-import { Input } from '@/components/ui/Input'
+import { Input } from '../ui/Input'
 
 const quickLinks = [
   { name: 'About Us', href: '/about' },

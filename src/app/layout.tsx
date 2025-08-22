@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
-import { ThemeProvider } from '../components/providers/ThemeProvider'
-import { SkipLink } from '../components/layout/SkipLink'
-import { Navbar } from '../components/layout/Navbar'
-import { Footer } from '../components/layout/Footer'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
+import { SkipLink } from '@/components/layout/SkipLink'
+import { Navbar } from '@/components/layout/Navbar'
+import { Footer } from '@/components/layout/Footer'
 import '@/styles/globals.css'
 
 const inter = Inter({

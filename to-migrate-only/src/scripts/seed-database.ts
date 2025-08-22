@@ -10,7 +10,7 @@
  * - Reset: npm run seed:reset
  */
 
-import { SEED_DATA } from '../supabase/functions/server/seeds.js'
+import { SEED_DATA } from '@/supabase/functions/server/seeds.js'
 
 interface KVStore {
   set(key: string, value: any): Promise<void>
@@ -69,7 +69,9 @@ class DatabaseSeeder {
     for (const property of SEED_DATA.properties) {
       await this.kv.set(`property:${property.id}`, property)
       console.log(
-        `   ✅ ${property.address} - $${property.price.toLocaleString()} (${property.city})`
+        `   ✅ ${property.address} - $${property.price.toLocaleString()} (${
+          property.city
+        })`
       )
     }
 
@@ -249,7 +251,9 @@ class DatabaseSeeder {
       console.log(`  Lowest: $${prices[0].toLocaleString()}`)
       console.log(`  Highest: $${prices[prices.length - 1].toLocaleString()}`)
       console.log(
-        `  Average: $${Math.round(prices.reduce((a, b) => a + b, 0) / prices.length).toLocaleString()}`
+        `  Average: $${Math.round(
+          prices.reduce((a, b) => a + b, 0) / prices.length
+        ).toLocaleString()}`
       )
       console.log(
         `  Median: $${prices[Math.floor(prices.length / 2)].toLocaleString()}`

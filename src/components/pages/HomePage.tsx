@@ -1,17 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Search, MapPin, DollarSign, Home, Star } from 'lucide-react'
-import { Button } from '../ui/Button'
+import { useState } from 'react'
+import { Search } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { PropertyCard } from '../ui/PropertyCard'
+import { PropertyCard } from '@/components/ui/PropertyCard'
 import { FilterBar } from '@/modules/FilterBar'
-import { useProperties } from '../../hooks/useProperties'
-import { useFavorites } from '../../hooks/useFavorites'
-import { EmptyState } from '../ui/EmptyState'
+import { useProperties } from '@/hooks/useProperties'
+// import { useFavorites } from '@/hooks/useFavorites'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { PropertyCardSkeleton } from '@/components/ui/PropertySkeleton'
-import type { PropertyFilters } from '../../types/property'
-import { ImageWithFallback } from '../ui/ImageWithFallback'
+import type { PropertyFilters } from '@/types/property'
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback'
 
 export function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -24,7 +24,7 @@ export function HomePage() {
   })
 
   const { properties, loading, error } = useProperties()
-  const { favorites, toggleFavorite } = useFavorites()
+  // const { favorites, toggleFavorite } = useFavorites()
 
   const filteredProperties = properties.filter(property => {
     const matchesSearch =
@@ -101,8 +101,9 @@ export function HomePage() {
             Exclusive South Florida Luxury Properties
           </h1>
           <p className="text-lg text-on-accent mb-8 max-w-2xl mx-auto font-semibold">
-            Discover Miami's most prestigious waterfront estates, penthouses,
-            and luxury condominiums in the world's most desirable locations.
+            Discover Miami&apos;s most prestigious waterfront estates,
+            penthouses, and luxury condominiums in the world&apos;s most
+            desirable locations.
           </p>
 
           {/* Search Bar */}

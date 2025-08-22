@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Heart, Bed, Bath, Square, MapPin, Star } from 'lucide-react'
 import { Button } from './Button'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from './Badge'
 import { formatPrice, formatSquareFeet, truncateText } from '../../lib/utils'
 import { useFavorites } from '../../hooks/useFavorites'
 import type { Property } from '../../types/property'
@@ -82,12 +82,12 @@ export function PropertyCard({ property, className = '' }: PropertyCardProps) {
             {property.status === 'forSale'
               ? 'For Sale'
               : property.status === 'forRent'
-                ? 'For Rent'
-                : property.status === 'sold'
-                  ? 'Sold'
-                  : property.status === 'rented'
-                    ? 'Rented'
-                    : 'Pending'}
+              ? 'For Rent'
+              : property.status === 'sold'
+              ? 'Sold'
+              : property.status === 'rented'
+              ? 'Rented'
+              : 'Pending'}
           </Badge>
         </div>
 

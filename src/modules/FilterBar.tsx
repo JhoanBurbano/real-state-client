@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { Filter } from 'lucide-react'
-import { Button } from '../components/ui/Button'
-import { Badge } from '../components/ui/Badge'
-import type { PropertyFilters } from '../types/property'
+import { Button } from '@/components/ui/Button'
+import { Badge } from '@/components/ui/Badge'
+import type { PropertyFilters } from '@/types/property'
 
 interface FilterBarProps {
   filters: Partial<PropertyFilters>
@@ -39,12 +39,15 @@ export function FilterBar({
     return count
   }
 
-  const handleFilterChange = (key: keyof PropertyFilters, value: any) => {
+  const handleFilterChange = (
+    key: keyof PropertyFilters,
+    value: string | number | (string | number)[]
+  ) => {
     onFiltersChange({ ...filters, [key]: value })
   }
 
-  const toggleFilter = (key: keyof PropertyFilters, value: any) => {
-    const currentValue = filters[key] as any[]
+  const toggleFilter = (key: keyof PropertyFilters, value: string | number) => {
+    const currentValue = filters[key] as (string | number)[]
     if (!currentValue) {
       handleFilterChange(key, [value])
     } else if (currentValue.includes(value)) {
@@ -166,7 +169,7 @@ export function FilterBar({
                 <Button
                   key={beds}
                   variant={
-                    filters.bedrooms?.includes(beds as any)
+                    filters.bedrooms?.includes(beds as number)
                       ? 'default'
                       : 'outline'
                   }
@@ -187,7 +190,7 @@ export function FilterBar({
                 <Button
                   key={baths}
                   variant={
-                    filters.bathrooms?.includes(baths as any)
+                    filters.bathrooms?.includes(baths as number)
                       ? 'default'
                       : 'outline'
                   }
