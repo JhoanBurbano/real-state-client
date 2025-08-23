@@ -4,7 +4,6 @@ import path from 'path'
 const nextConfig: NextConfig = {
   /* config options here */
   turbopack: {
-    root: path.resolve(__dirname),
     resolveAlias: {
       '@': path.resolve(__dirname, 'src'),
       '@/components': path.resolve(__dirname, 'src/components'),
