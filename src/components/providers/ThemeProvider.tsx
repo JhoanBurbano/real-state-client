@@ -1,10 +1,10 @@
 'use client'
 
-import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import { Attribute, ThemeProvider as NextThemesProvider } from 'next-themes'
 
 interface ThemeProviderProps {
   children: React.ReactNode
-  attribute?: string
+  attribute?: Attribute
   defaultTheme?: string
   enableSystem?: boolean
   disableTransitionOnChange?: boolean

@@ -4,6 +4,7 @@ import path from 'path'
 const nextConfig: NextConfig = {
   /* config options here */
   turbopack: {
+    root: path.resolve(__dirname),
     resolveAlias: {
       '@': path.resolve(__dirname, 'src'),
       '@/components': path.resolve(__dirname, 'src/components'),
@@ -14,9 +15,6 @@ const nextConfig: NextConfig = {
       '@/styles': path.resolve(__dirname, 'src/styles'),
       '@/lib': path.resolve(__dirname, 'src/lib'),
     },
-  },
-  experimental: {
-    optimizePackageImports: ['lucide-react'],
   },
   images: {
     remotePatterns: [
@@ -29,12 +27,6 @@ const nextConfig: NextConfig = {
         hostname: 'images.unsplash.com',
       },
     ],
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
   },
 }
 

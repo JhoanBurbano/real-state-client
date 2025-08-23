@@ -1,4 +1,4 @@
-import { Skeleton } from './Skeleton'
+import { Skeleton } from '@/components/ui/Skeleton'
 
 export function PropertyCardSkeleton() {
   return (
@@ -71,7 +71,10 @@ export function PropertyListSkeleton() {
   return (
     <div className="space-y-4">
       {Array.from({ length: 4 }).map((_, index) => (
-        <div key={index} className="flex space-x-4 p-4 bg-surface-elev rounded-lg">
+        <div
+          key={index}
+          className="flex space-x-4 p-4 bg-surface-elev rounded-lg"
+        >
           <Skeleton className="w-32 h-24 rounded-lg flex-shrink-0" />
           <div className="flex-1 space-y-2">
             <Skeleton className="h-5 w-3/4" />
