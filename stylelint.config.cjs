@@ -1,7 +1,6 @@
 module.exports = {
   extends: ['stylelint-config-standard'],
   rules: {
-    'no-empty-source': null
-  }
+    'no-empty-source': null,
+  },
 }
-

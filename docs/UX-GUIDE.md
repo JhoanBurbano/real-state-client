@@ -17,4 +17,3 @@
 - Empty & Skeleton: show meaningful empty states and skeletons for perceived performance.
 - Toasts: use for confirmations and failures; also mirror errors inline when possible.
 - Gallery: keyboard navigation with visible focus; lightbox can be added with focus trap.
-

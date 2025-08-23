@@ -82,12 +82,12 @@ export function PropertyCard({ property, className = '' }: PropertyCardProps) {
             {property.status === 'forSale'
               ? 'For Sale'
               : property.status === 'forRent'
-              ? 'For Rent'
-              : property.status === 'sold'
-              ? 'Sold'
-              : property.status === 'rented'
-              ? 'Rented'
-              : 'Pending'}
+                ? 'For Rent'
+                : property.status === 'sold'
+                  ? 'Sold'
+                  : property.status === 'rented'
+                    ? 'Rented'
+                    : 'Pending'}
           </Badge>
         </div>
 

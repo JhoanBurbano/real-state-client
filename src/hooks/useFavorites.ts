@@ -19,7 +19,7 @@ export function useFavorites() {
   }, [])
 
   const addFavorite = (propertyId: string) => {
-    setFavorites((prev) => {
+    setFavorites(prev => {
       const newFavorites = [...prev, propertyId]
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites))
       return newFavorites
@@ -27,8 +27,8 @@ export function useFavorites() {
   }
 
   const removeFavorite = (propertyId: string) => {
-    setFavorites((prev) => {
-      const newFavorites = prev.filter((id) => id !== propertyId)
+    setFavorites(prev => {
+      const newFavorites = prev.filter(id => id !== propertyId)
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites))
       return newFavorites
     })

@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -15,28 +15,28 @@ body {
   --font-playfair: 'Playfair Display', serif;
 
   /* MILLION Brand Colors */
-  --color-bg: #FFFFFF;
-  --color-surface: #F7F7F8;
-  --color-surface-elev: #FFFFFF;
-  --color-text: #1A1A1A;
-  --color-text-muted: #5B616E;
-  --color-line: rgba(0,0,0,0.08);
-  --color-accent: #A78047;
-  --color-on-accent: #FFFFFF;
-  --color-success: #249F6A;
-  --color-warning: #B77816;
-  --color-error: #C94040;
-  --color-info: #2E6DD9;
+  --color-bg: #ffffff;
+  --color-surface: #f7f7f8;
+  --color-surface-elev: #ffffff;
+  --color-text: #1a1a1a;
+  --color-text-muted: #5b616e;
+  --color-line: rgba(0, 0, 0, 0.08);
+  --color-accent: #a78047;
+  --color-on-accent: #ffffff;
+  --color-success: #249f6a;
+  --color-warning: #b77816;
+  --color-error: #c94040;
+  --color-info: #2e6dd9;
 
   /* Dark Mode Colors */
-  --color-dark-bg: #1A1A1A;
-  --color-dark-surface: #2A2A2A;
+  --color-dark-bg: #1a1a1a;
+  --color-dark-surface: #2a2a2a;
   --color-dark-surface-elev: #333333;
-  --color-dark-text: #FFFFFF;
-  --color-dark-text-muted: #A0A0A0;
-  --color-dark-line: rgba(255,255,255,0.08);
-  --color-dark-accent: #D4AF37;
-  --color-dark-on-accent: #1A1A1A;
+  --color-dark-text: #ffffff;
+  --color-dark-text-muted: #a0a0a0;
+  --color-dark-line: rgba(255, 255, 255, 0.08);
+  --color-dark-accent: #d4af37;
+  --color-dark-on-accent: #1a1a1a;
 }
 
 .btn-luxury {
@@ -49,5 +49,4 @@ body {
 
 .badge-luxury {
   @apply bg-accent text-on-accent px-3 py-2 rounded-md font-medium transition-all duration-300;
-
 }
