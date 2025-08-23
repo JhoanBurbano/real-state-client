@@ -30,6 +30,12 @@ const eslintConfig = [
       'next-env.d.ts',
     ],
   },
+  {
+    plugins: ['prettier'],
+    rules: {
+      'prettier/prettier': 'error',
+    },
+  },
 ]
 
 export default eslintConfig
