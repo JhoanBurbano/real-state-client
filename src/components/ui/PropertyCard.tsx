@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { formatPrice, formatSquareFeet, truncateText } from '@/lib/utils'
 import { useFavorites } from '@/hooks/useFavorites'
-import type { Property } from '@/types/property'
+import type { Property } from '@/types'
 
 interface PropertyCardProps {
   property: Property
@@ -19,6 +19,8 @@ export function PropertyCard({ property, className = '' }: PropertyCardProps) {
   const { isFavorite, toggleFavorite } = useFavorites()
   const [imageError, setImageError] = useState(false)
   const [imageLoading, setImageLoading] = useState(true)
+
+  console.log('property', property)
 
   const handleImageError = () => {
     setImageError(true)
@@ -40,8 +42,8 @@ export function PropertyCard({ property, className = '' }: PropertyCardProps) {
         )}
         {!imageError ? (
           <Image
-            src={property.images[0] || '/placeholder-property.jpg'}
-            alt={property.title}
+            src={property.coverUrl}
+            alt={property.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             onError={handleImageError}
@@ -63,7 +65,7 @@ export function PropertyCard({ property, className = '' }: PropertyCardProps) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => toggleFavorite(property.id)}
+          onClick={() => toggleFavorite(property)}
           className="absolute top-3 right-3 bg-white/90 hover:bg-white text-text hover:text-accent transition-all"
           aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
         >
@@ -77,17 +79,17 @@ export function PropertyCard({ property, className = '' }: PropertyCardProps) {
         {/* Status Badge */}
         <div className="absolute top-3 left-3">
           <Badge
-            variant={property.status === 'forSale' ? 'default' : 'secondary'}
+            variant={property.status === 'Active' ? 'default' : 'secondary'}
           >
-            {property.status === 'forSale'
+            {property.status === 'Active'
               ? 'For Sale'
-              : property.status === 'forRent'
-                ? 'For Rent'
-                : property.status === 'sold'
-                  ? 'Sold'
-                  : property.status === 'rented'
-                    ? 'Rented'
-                    : 'Pending'}
+              : property.status === 'Sold'
+                ? 'Sold'
+                : property.status === 'OffMarket'
+                  ? 'Off Market'
+                  : property.status === 'Pending'
+                    ? 'Pending'
+                    : property.status}
           </Badge>
         </div>
 
@@ -105,14 +107,14 @@ export function PropertyCard({ property, className = '' }: PropertyCardProps) {
       <div className="p-4 space-y-3">
         {/* Title and Location */}
         <div>
-          <Link href={`/property/${property.id}`}>
+          <Link href={`/properties/${property.id}`}>
             <h3 className="font-semibold text-text hover:text-accent transition-colors line-clamp-1">
-              {property.title}
+              {property.name}
             </h3>
           </Link>
           <div className="flex items-center text-text-muted text-sm mt-1">
             <MapPin className="w-4 h-4 mr-1" />
-            <span>{property.location}</span>
+            <span>{property.address}</span>
           </div>
         </div>
 
@@ -129,7 +131,7 @@ export function PropertyCard({ property, className = '' }: PropertyCardProps) {
             </div>
             <div className="flex items-center">
               <Square className="w-4 h-4 mr-1" />
-              <span>{formatSquareFeet(property.squareFeet)}</span>
+              <span>{formatSquareFeet(property.size)}</span>
             </div>
           </div>
         </div>
@@ -137,52 +139,28 @@ export function PropertyCard({ property, className = '' }: PropertyCardProps) {
         {/* Property Type */}
         <div className="flex items-center justify-between">
           <Badge variant="outline" className="capitalize">
-            {property.type}
+            {property.propertyType}
           </Badge>
-          {property.agent?.rating && (
-            <div className="flex items-center text-sm">
-              <Star className="w-4 h-4 text-accent mr-1 fill-current" />
-              <span className="text-text">{property.agent.rating}</span>
-            </div>
-          )}
         </div>
 
         {/* Description */}
         <p className="text-text-muted text-sm line-clamp-2">
-          {truncateText(property.description, 120)}
+          {truncateText(
+            property?.description || 'No description available',
+            120
+          )}
         </p>
-
-        {/* Agent Info */}
-        {property.agent && (
-          <div className="flex items-center space-x-3 pt-2 border-t border-line/20">
-            <div className="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center">
-              <span className="text-accent font-semibold text-sm">
-                {property.agent.name.charAt(0)}
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-text truncate">
-                {property.agent.name}
-              </p>
-              <p className="text-xs text-text-muted truncate">
-                {property.agent.experience} years experience
-              </p>
-            </div>
-          </div>
-        )}
 
         {/* Action Buttons */}
         <div className="flex space-x-2 pt-2">
-          <Link href={`/property/${property.id}`} className="flex-1">
+          <Link href={`/properties/${property.id}`} className="flex-1">
             <Button variant="outline" className="w-full">
               View Details
             </Button>
           </Link>
-          <Link href={`/property/${property.id}#contact`}>
-            <Button variant="default" size="sm">
-              Contact Agent
-            </Button>
-          </Link>
+          {/* <Link href={`/properties/${property.id}`}>
+            <Button variant="default">Contact Agent</Button>
+          </Link> */}
         </div>
       </div>
     </div>

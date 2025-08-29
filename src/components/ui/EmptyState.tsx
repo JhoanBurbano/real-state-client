@@ -1,89 +1,90 @@
 'use client'
 
-import { Button } from '@/components/ui/Button'
-import { Search, Heart, Home, AlertCircle } from 'lucide-react'
+import { Search, AlertCircle, Loader2 } from 'lucide-react'
+import { Button } from './Button'
 
 interface EmptyStateProps {
-  type: 'noResults' | 'noFavorites' | 'noProperties' | 'error'
+  type?: 'loading' | 'no-results' | 'error' | 'no-data'
   title?: string
-  subtitle?: string
-  actionText?: string
+  description?: string
+  actionLabel?: string
   onAction?: () => void
-  className?: string
+  showAction?: boolean
 }
 
 export function EmptyState({
-  type,
+  type = 'no-data',
   title,
-  subtitle,
-  actionText,
+  description,
+  actionLabel,
   onAction,
-  className = '',
+  showAction = true,
 }: EmptyStateProps) {
   const getDefaultContent = () => {
     switch (type) {
-      case 'noResults':
+      case 'loading':
+        return {
+          icon: Loader2,
+          title: 'Loading Properties...',
+          description:
+            'Please wait while we fetch the latest properties for you.',
+          className: 'text-accent',
+        }
+      case 'no-results':
         return {
           icon: Search,
-          title: 'No results found',
-          subtitle:
+          title: 'No Properties Found',
+          description:
             'Try adjusting your search criteria or filters to find more properties.',
-          actionText: 'Clear Filters',
-        }
-      case 'noFavorites':
-        return {
-          icon: Heart,
-          title: 'No favorites yet',
-          subtitle:
-            'Start exploring properties and add your favorites to see them here.',
-          actionText: 'Explore Properties',
-        }
-      case 'noProperties':
-        return {
-          icon: Home,
-          title: 'No properties available',
-          subtitle:
-            'Check back later for new listings or try adjusting your search criteria.',
-          actionText: 'Search Again',
+          className: 'text-accent',
         }
       case 'error':
         return {
           icon: AlertCircle,
-          title: 'Something went wrong',
-          subtitle:
-            "We're having trouble loading the content. Please try again later.",
-          actionText: 'Try Again',
+          title: 'Something Went Wrong',
+          description:
+            'We encountered an error while loading properties. Please try again.',
+          className: 'text-red-500',
         }
+      case 'no-data':
       default:
         return {
           icon: Search,
-          title: 'No items found',
-          subtitle: 'Try adjusting your search criteria',
-          actionText: 'Search again',
+          title: 'No Properties Available',
+          description:
+            'There are currently no properties listed. Check back later for new listings.',
+          className: 'text-accent',
         }
     }
   }
 
-  const { icon: Icon, ...defaultContent } = getDefaultContent()
+  const content = getDefaultContent()
+  const IconComponent = content.icon
 
   return (
-    <div className={`text-center py-12 px-4 ${className}`}>
-      <div className="mx-auto w-24 h-24 bg-surface rounded-full flex items-center justify-center mb-6">
-        <Icon className="w-12 h-12 text-text-muted" />
+    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+      <div className={`${content.className} mb-4`}>
+        <IconComponent className="h-16 w-16 mx-auto" />
       </div>
 
       <h3 className="text-xl font-semibold text-text mb-2">
-        {title || defaultContent.title}
+        {title || content.title}
       </h3>
 
-      <p className="text-text-muted mb-6 max-w-md mx-auto">
-        {subtitle || defaultContent.subtitle}
+      <p className="text-text-muted max-w-md mb-6">
+        {description || content.description}
       </p>
 
-      {(actionText || defaultContent.actionText) && (
-        <Button variant="default" onClick={onAction} className="mx-auto">
-          {actionText || defaultContent.actionText}
+      {showAction && actionLabel && onAction && (
+        <Button onClick={onAction} variant="outline">
+          {actionLabel}
         </Button>
+      )}
+
+      {type === 'loading' && (
+        <div className="mt-4">
+          <Loader2 className="h-6 w-6 animate-spin text-accent mx-auto" />
+        </div>
       )}
     </div>
   )

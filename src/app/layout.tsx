@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
+import { HydrationWrapper } from '@/components/providers/HydrationWrapper'
 import { SkipLink } from '@/components/layout/SkipLink'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import '@/styles/globals.css'
+import { AuthProvider } from '@/context/AuthContext'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -92,6 +94,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${playfairDisplay.variable} font-base antialiased`}
+        suppressHydrationWarning
       >
         <ThemeProvider
           attribute="class"
@@ -99,14 +102,18 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SkipLink />
-          <div className="flex min-h-screen flex-col">
-            <Navbar />
-            <main className="flex-1" id="main-content">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <HydrationWrapper>
+            <AuthProvider>
+              <SkipLink />
+              <div className="flex min-h-screen flex-col">
+                <Navbar />
+                <main className="flex-1" id="main-content">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+            </AuthProvider>
+          </HydrationWrapper>
         </ThemeProvider>
       </body>
     </html>

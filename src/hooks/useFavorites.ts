@@ -1,67 +1,114 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-
-const FAVORITES_KEY = 'million-favorites'
+import { useState, useEffect, useCallback } from 'react'
+import type { Property } from '@/types'
 
 export function useFavorites() {
-  const [favorites, setFavorites] = useState<string[]>([])
+  const [favorites, setFavorites] = useState<Property[]>([])
+  const [loading, setLoading] = useState(false)
 
+  // Load favorites from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem(FAVORITES_KEY)
-    if (stored) {
+    const loadFavorites = () => {
       try {
-        setFavorites(JSON.parse(stored))
-      } catch {
-        setFavorites([])
+        const stored = localStorage.getItem('million_favorites')
+        if (stored) {
+          const parsedFavorites = JSON.parse(stored)
+          setFavorites(parsedFavorites)
+        }
+      } catch (error) {
+        console.error('Failed to load favorites:', error)
+        // Clear corrupted favorites
+        localStorage.removeItem('million_favorites')
       }
+    }
+
+    loadFavorites()
+  }, [])
+
+  // Save favorites to localStorage
+  const saveFavorites = useCallback((newFavorites: Property[]) => {
+    try {
+      localStorage.setItem('million_favorites', JSON.stringify(newFavorites))
+    } catch (error) {
+      console.error('Failed to save favorites:', error)
     }
   }, [])
 
-  const addFavorite = (propertyId: string) => {
-    setFavorites(prev => {
-      const newFavorites = [...prev, propertyId]
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites))
-      return newFavorites
-    })
-  }
+  // Add property to favorites
+  const addToFavorites = useCallback(
+    (property: Property) => {
+      setFavorites(prev => {
+        const isAlreadyFavorite = prev.some(fav => fav.id === property.id)
+        if (isAlreadyFavorite) {
+          return prev
+        }
 
-  const removeFavorite = (propertyId: string) => {
-    setFavorites(prev => {
-      const newFavorites = prev.filter(id => id !== propertyId)
-      localStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites))
-      return newFavorites
-    })
-  }
+        const newFavorites = [...prev, property]
+        saveFavorites(newFavorites)
+        return newFavorites
+      })
+    },
+    [saveFavorites]
+  )
 
-  const toggleFavorite = (propertyId: string) => {
-    if (isFavorite(propertyId)) {
-      removeFavorite(propertyId)
-    } else {
-      addFavorite(propertyId)
-    }
-  }
+  // Remove property from favorites
+  const removeFromFavorites = useCallback(
+    (propertyId: string) => {
+      setFavorites(prev => {
+        const newFavorites = prev.filter(fav => fav.id !== propertyId)
+        saveFavorites(newFavorites)
+        return newFavorites
+      })
+    },
+    [saveFavorites]
+  )
 
-  const isFavorite = (propertyId: string) => {
-    return favorites.includes(propertyId)
-  }
+  // Toggle favorite status
+  const toggleFavorite = useCallback(
+    (property: Property) => {
+      setFavorites(prev => {
+        const isFavorite = prev.some(fav => fav.id === property.id)
 
-  const clearFavorites = () => {
+        if (isFavorite) {
+          const newFavorites = prev.filter(fav => fav.id !== property.id)
+          saveFavorites(newFavorites)
+          return newFavorites
+        } else {
+          const newFavorites = [...prev, property]
+          saveFavorites(newFavorites)
+          return newFavorites
+        }
+      })
+    },
+    [saveFavorites]
+  )
+
+  // Check if property is in favorites
+  const isFavorite = useCallback(
+    (propertyId: string): boolean => {
+      return favorites.some(fav => fav.id === propertyId)
+    },
+    [favorites]
+  )
+
+  // Clear all favorites
+  const clearFavorites = useCallback(() => {
     setFavorites([])
-    localStorage.removeItem(FAVORITES_KEY)
-  }
+    localStorage.removeItem('million_favorites')
+  }, [])
 
-  const getFavoritesCount = () => {
-    return favorites.length
-  }
+  // Get favorites count
+  const favoritesCount = favorites.length
 
   return {
     favorites,
-    addFavorite,
-    removeFavorite,
+    loading,
+    favoritesCount,
+    addToFavorites,
+    removeFromFavorites,
     toggleFavorite,
     isFavorite,
     clearFavorites,
-    getFavoritesCount,
   }
 }

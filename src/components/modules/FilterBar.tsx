@@ -110,9 +110,11 @@ export function FilterBar({
               className="w-full px-3 py-2 border border-line rounded-md focus:ring-2 focus:ring-accent focus:border-transparent text-sm"
             >
               <option value="">All Bedrooms</option>
-              {filterOptions.bedroomOptions.map((option: any) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
+              {[0, 1, 2, 3, 4, 5].map(bedrooms => (
+                <option key={bedrooms} value={bedrooms}>
+                  {bedrooms === 0
+                    ? 'Studio'
+                    : `${bedrooms} Bedroom${bedrooms > 1 ? 's' : ''}`}
                 </option>
               ))}
             </select>
@@ -130,9 +132,9 @@ export function FilterBar({
               className="w-full px-3 py-2 border border-line rounded-md focus:ring-2 focus:ring-accent focus:border-transparent text-sm"
             >
               <option value="">All Bathrooms</option>
-              {filterOptions.bathroomOptions.map((option: any) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
+              {[1, 1.5, 2, 2.5, 3, 3.5, 4].map(bathrooms => (
+                <option key={bathrooms} value={bathrooms}>
+                  {bathrooms === 1 ? '1 Bathroom' : `${bathrooms} Bathrooms`}
                 </option>
               ))}
             </select>
@@ -170,11 +172,11 @@ export function FilterBar({
               className="w-full px-3 py-2 border border-line rounded-md focus:ring-2 focus:ring-accent focus:border-transparent text-sm"
             >
               <option value="">All Locations</option>
-              {filterOptions.locations.map((location: any) => (
-                <option key={location.value} value={location.value}>
-                  {location.label}
+              {filterOptions.cities?.map((city: string) => (
+                <option key={city} value={city}>
+                  {city}
                 </option>
-              ))}
+              )) || null}
             </select>
           </div>
         </div>

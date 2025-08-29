@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { PropertyCard } from '@/components/ui/PropertyCard'
 import { FilterBar } from '@/modules/FilterBar'
-import { useProperties } from '@/hooks/useProperties'
+import { useHomeProperties } from '@/hooks/useHomeProperties'
 // import { useFavorites } from '@/hooks/useFavorites'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { PropertyCardSkeleton } from '@/components/ui/PropertySkeleton'
@@ -16,38 +16,39 @@ import { ImageWithFallback } from '@/components/ui/ImageWithFallback'
 export function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState<Partial<PropertyFilters>>({
-    priceRange: [0, 10000000] as [number, number],
-    propertyType: [],
-    bedrooms: [],
-    bathrooms: [],
-    location: [],
+    minPrice: 0,
+    maxPrice: 10000000,
+    propertyType: '',
+    bedrooms: undefined,
+    bathrooms: undefined,
+    city: '',
   })
 
-  const { properties, loading, error } = useProperties()
+  const { properties, loading, error, loadMore, currentPage, totalPages } =
+    useHomeProperties()
   // const { favorites, toggleFavorite } = useFavorites()
 
   const filteredProperties = properties.filter(property => {
     const matchesSearch =
-      property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      property.location.toLowerCase().includes(searchQuery.toLowerCase())
+      property.codeInternal.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      property.city.toLowerCase().includes(searchQuery.toLowerCase())
 
     const matchesPrice =
-      property.price >= filters.priceRange![0] &&
-      property.price <= filters.priceRange![1]
+      property.price >= (filters.minPrice || 0) &&
+      property.price <= (filters.maxPrice || 10000000)
 
     const matchesType =
-      !filters.propertyType?.length ||
-      filters.propertyType.includes(property.type)
+      !filters.propertyType || filters.propertyType === property.propertyType
+
     const matchesBedrooms =
-      !filters.bedrooms?.length || filters.bedrooms.includes(property.bedrooms)
+      !filters.bedrooms || filters.bedrooms === property.bedrooms
+
     const matchesBathrooms =
-      !filters.bathrooms?.length ||
-      filters.bathrooms.includes(property.bathrooms)
+      !filters.bathrooms || filters.bathrooms === property.bathrooms
+
     const matchesLocation =
-      !filters.location?.length ||
-      filters.location.some(loc =>
-        property.location.toLowerCase().includes(loc.toLowerCase())
-      )
+      !filters.city ||
+      property.city.toLowerCase().includes(filters.city.toLowerCase())
 
     return (
       matchesSearch &&
@@ -76,8 +77,8 @@ export function HomePage() {
       <EmptyState
         type="error"
         title="Something went wrong"
-        subtitle="We're having trouble loading properties. Please try again later."
-        actionText="Try Again"
+        description="We're having trouble loading properties. Please try again later."
+        actionLabel="Try Again"
         onAction={() => window.location.reload()}
       />
     )
@@ -88,12 +89,19 @@ export function HomePage() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-surface to-surface-elev py-20 lg:py-64">
         <div className="absolute inset-0">
-          <ImageWithFallback
-            src="https://images.unsplash.com/photo-1571055107559-3e67626fa8be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-            alt=""
-            className="w-full h-full object-cover"
-            role="presentation"
-          />
+          <Suspense
+            fallback={
+              <div className="w-full h-full bg-surface animate-pulse" />
+            }
+          >
+            <ImageWithFallback
+              src="https://images.unsplash.com/photo-1571055107559-3e67626fa8be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+              alt=""
+              fill
+              className="w-full h-full object-cover"
+              role="presentation"
+            />
+          </Suspense>
           <div className="absolute inset-0 bg-black/40" />
         </div>
         <div className="container mx-auto px-4 text-center z-10 relative">
@@ -177,36 +185,65 @@ export function HomePage() {
             onClear={() => {
               setSearchQuery('')
               setFilters({
-                priceRange: [0, 10000000] as [number, number],
-                propertyType: [],
-                bedrooms: [],
-                bathrooms: [],
-                location: [],
+                minPrice: 0,
+                maxPrice: 10000000,
+                propertyType: '',
+                bedrooms: undefined,
+                bathrooms: undefined,
+                city: '',
               })
             }}
           />
 
           {/* Properties Grid */}
           {filteredProperties.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProperties.map(property => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredProperties.map(property => (
+                  <PropertyCard key={property.id} property={property} />
+                ))}
+              </div>
+
+              {/* Load More Button for Home */}
+              {currentPage < totalPages && (
+                <div className="text-center mt-8">
+                  <Button
+                    onClick={loadMore}
+                    disabled={loading}
+                    size="lg"
+                    className="px-8"
+                  >
+                    {loading ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Loading...</span>
+                      </div>
+                    ) : (
+                      'Load More Properties'
+                    )}
+                  </Button>
+                  <p className="text-sm text-text-muted mt-2">
+                    Showing {filteredProperties.length} of {properties.length}{' '}
+                    properties
+                  </p>
+                </div>
+              )}
+            </>
           ) : (
             <EmptyState
-              type="noResults"
+              type="no-results"
               title="No properties found"
-              subtitle="Try adjusting your search criteria or filters to find more properties."
-              actionText="Clear Filters"
+              description="Try adjusting your search criteria or filters to find more properties."
+              actionLabel="Clear Filters"
               onAction={() => {
                 setSearchQuery('')
                 setFilters({
-                  priceRange: [0, 10000000] as [number, number],
-                  propertyType: [],
-                  bedrooms: [],
-                  bathrooms: [],
-                  location: [],
+                  minPrice: 0,
+                  maxPrice: 10000000,
+                  propertyType: '',
+                  bedrooms: undefined,
+                  bathrooms: undefined,
+                  city: '',
                 })
               }}
             />

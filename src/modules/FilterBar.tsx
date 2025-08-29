@@ -28,14 +28,14 @@ export function FilterBar({
   const getActiveFiltersCount = () => {
     let count = 0
     if (
-      filters.priceRange &&
-      (filters.priceRange[0] !== 0 || filters.priceRange[1] !== 10000000)
+      (filters.minPrice !== undefined && filters.minPrice > 0) ||
+      (filters.maxPrice !== undefined && filters.maxPrice < 10000000)
     )
       count++
-    if (filters.propertyType?.length) count += filters.propertyType.length
-    if (filters.bedrooms?.length) count += filters.bedrooms.length
-    if (filters.bathrooms?.length) count += filters.bathrooms.length
-    if (filters.location?.length) count += filters.location.length
+    if (filters.propertyType) count++
+    if (filters.bedrooms !== undefined) count++
+    if (filters.bathrooms !== undefined) count++
+    if (filters.city) count++
     return count
   }
 
@@ -47,17 +47,8 @@ export function FilterBar({
   }
 
   const toggleFilter = (key: keyof PropertyFilters, value: string | number) => {
-    const currentValue = filters[key] as (string | number)[]
-    if (!currentValue) {
-      handleFilterChange(key, [value])
-    } else if (currentValue.includes(value)) {
-      handleFilterChange(
-        key,
-        currentValue.filter(v => v !== value)
-      )
-    } else {
-      handleFilterChange(key, [...currentValue, value])
-    }
+    // For single value filters, just set the value
+    handleFilterChange(key, value)
   }
 
   return (
@@ -103,12 +94,12 @@ export function FilterBar({
                 </label>
                 <input
                   type="number"
-                  value={filters.priceRange?.[0] || 0}
+                  value={filters.minPrice || 0}
                   onChange={e =>
-                    handleFilterChange('priceRange', [
-                      parseInt(e.target.value) || 0,
-                      filters.priceRange?.[1] || 10000000,
-                    ])
+                    handleFilterChange(
+                      'minPrice',
+                      parseInt(e.target.value) || 0
+                    )
                   }
                   className="w-full px-3 py-2 border border-line rounded-md focus:ring-2 focus:ring-accent focus:border-transparent"
                   placeholder="0"
@@ -120,12 +111,12 @@ export function FilterBar({
                 </label>
                 <input
                   type="number"
-                  value={filters.priceRange?.[1] || 10000000}
+                  value={filters.maxPrice || 10000000}
                   onChange={e =>
-                    handleFilterChange('priceRange', [
-                      filters.priceRange?.[0] || 0,
-                      parseInt(e.target.value) || 10000000,
-                    ])
+                    handleFilterChange(
+                      'maxPrice',
+                      parseInt(e.target.value) || 10000000
+                    )
                   }
                   className="w-full px-3 py-2 border border-line rounded-md focus:ring-2 focus:ring-accent focus:border-transparent"
                   placeholder="10000000"
@@ -149,7 +140,7 @@ export function FilterBar({
                 <Button
                   key={type}
                   variant={
-                    filters.propertyType?.includes(type) ? 'default' : 'outline'
+                    filters.propertyType === type ? 'default' : 'outline'
                   }
                   size="sm"
                   onClick={() => toggleFilter('propertyType', type)}
@@ -168,11 +159,7 @@ export function FilterBar({
               {[1, 2, 3, 4, 5, '5+'].map(beds => (
                 <Button
                   key={beds}
-                  variant={
-                    filters.bedrooms?.includes(beds as number)
-                      ? 'default'
-                      : 'outline'
-                  }
+                  variant={filters.bedrooms === beds ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => toggleFilter('bedrooms', beds)}
                 >
@@ -189,11 +176,7 @@ export function FilterBar({
               {[1, 2, 3, 4, '4+'].map(baths => (
                 <Button
                   key={baths}
-                  variant={
-                    filters.bathrooms?.includes(baths as number)
-                      ? 'default'
-                      : 'outline'
-                  }
+                  variant={filters.bathrooms === baths ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => toggleFilter('bathrooms', baths)}
                 >
@@ -217,11 +200,9 @@ export function FilterBar({
               ].map(city => (
                 <Button
                   key={city}
-                  variant={
-                    filters.location?.includes(city) ? 'default' : 'outline'
-                  }
+                  variant={filters.city === city ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => toggleFilter('location', city)}
+                  onClick={() => toggleFilter('city', city)}
                 >
                   {city}
                 </Button>
