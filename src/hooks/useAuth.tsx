@@ -1,12 +1,6 @@
 'use client'
 
-import {
-  useState,
-  useEffect,
-  useCallback,
-  createContext,
-  useContext,
-} from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { millionAPI } from '../lib/api/million-api'
 import type {
   Owner,
@@ -14,16 +8,17 @@ import type {
   AuthState,
   AuthContextType,
 } from '../types'
+import { useToast } from '@/context/ToastContext'
+import { useAuthContext } from '@/context/AuthContext'
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function useAuth(): AuthContextType {
+  const toast = useToast()
   const [state, setState] = useState<AuthState>({
     isAuthenticated: false,
-    user: null,
+    owner: null,
     accessToken: null,
     refreshToken: null,
-    loading: true,
+    isLoading: true,
     error: null,
   })
 
@@ -35,27 +30,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const refreshToken = millionAPI.getRefreshToken()
 
         if (accessToken && refreshToken) {
-          setState(prev => ({
+          // Sincronizar el estado con millionAPI
+          millionAPI.setTokens(accessToken, refreshToken)
+
+          setState((prev: AuthState) => ({
             ...prev,
             isAuthenticated: true,
             accessToken,
             refreshToken,
-            loading: false,
+            isLoading: false,
           }))
 
           // Fetch user profile
           fetchProfile()
         } else {
-          setState(prev => ({
+          setState((prev: AuthState) => ({
             ...prev,
-            loading: false,
+            isLoading: false,
           }))
         }
       } catch (error) {
         console.error('Error initializing auth:', error)
-        setState(prev => ({
+        setState((prev: AuthState) => ({
           ...prev,
-          loading: false,
+          isLoading: false,
         }))
       }
     }
@@ -67,19 +65,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Fetch user profile
   const fetchProfile = useCallback(async () => {
     try {
-      const user = await millionAPI.getOwnerProfile()
-      setState(prev => ({
+      const owner = await millionAPI.getOwnerProfile()
+      setState((prev: AuthState) => ({
         ...prev,
-        user,
+        owner,
         error: null,
       }))
     } catch (err) {
       console.error('Failed to fetch profile:', err)
       // If profile fetch fails, user might not be authenticated
-      setState(prev => ({
+      setState((prev: AuthState) => ({
         ...prev,
         isAuthenticated: false,
-        user: null,
+        owner: null,
         accessToken: null,
         refreshToken: null,
       }))
@@ -90,27 +88,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(
     async (email: string, password: string) => {
       try {
-        setState(prev => ({ ...prev, loading: true, error: null }))
+        setState((prev: AuthState) => ({
+          ...prev,
+          isLoading: true,
+          error: null,
+        }))
 
         const response = await millionAPI.login(email, password)
 
-        setState(prev => ({
+        // Sincronizar el token con millionAPI
+        millionAPI.setTokens(response.accessToken, response.refreshToken)
+
+        setState((prev: AuthState) => ({
           ...prev,
           isAuthenticated: true,
           accessToken: response.accessToken,
           refreshToken: response.refreshToken,
-          loading: false,
+          isLoading: false,
           error: null,
         }))
 
         // Fetch user profile after successful login
         await fetchProfile()
+
+        // Mostrar toast de éxito
+        toast.showSuccess('¡Bienvenido!', 'Has iniciado sesión correctamente')
       } catch (err) {
-        setState(prev => ({
+        const errorMessage = err instanceof Error ? err.message : 'Login failed'
+        setState((prev: AuthState) => ({
           ...prev,
-          loading: false,
-          error: err instanceof Error ? err.message : 'Login failed',
+          isLoading: false,
+          error: errorMessage,
         }))
+
+        // Mostrar toast de error
+        toast.showError('Error de inicio de sesión', errorMessage)
         throw err
       }
     },
@@ -121,38 +133,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     try {
       await millionAPI.logout()
+      toast.showSuccess('Sesión cerrada', 'Has cerrado sesión correctamente')
     } catch (err) {
       console.error('Logout error:', err)
+      toast.showWarning('Advertencia', 'Error al cerrar sesión en el servidor')
     } finally {
+      // Limpiar tokens del millionAPI
+      millionAPI.clearTokens()
+
       setState({
         isAuthenticated: false,
-        user: null,
+        owner: null,
         accessToken: null,
         refreshToken: null,
-        loading: false,
+        isLoading: false,
         error: null,
       })
     }
-  }, [])
+  }, [toast])
 
   // Refresh token
   const refreshAccessToken = useCallback(async () => {
     try {
-      setState(prev => ({ ...prev, loading: true, error: null }))
+      setState((prev: AuthState) => ({ ...prev, isLoading: true, error: null }))
 
       const response = await millionAPI.refreshAccessToken()
 
-      setState(prev => ({
+      // Sincronizar el token con millionAPI
+      millionAPI.setTokens(response.accessToken, response.refreshToken)
+
+      setState((prev: AuthState) => ({
         ...prev,
         accessToken: response.accessToken,
         refreshToken: response.refreshToken,
-        loading: false,
+        isLoading: false,
         error: null,
       }))
     } catch (err) {
-      setState(prev => ({
+      setState((prev: AuthState) => ({
         ...prev,
-        loading: false,
+        isLoading: false,
         error: err instanceof Error ? err.message : 'Token refresh failed',
       }))
 
@@ -163,61 +183,99 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [logout])
 
   // Update profile
-  const updateProfile = useCallback(async (data: UpdateOwnerRequest) => {
-    try {
-      setState(prev => ({ ...prev, loading: true, error: null }))
+  const updateProfile = useCallback(
+    async (data: UpdateOwnerRequest) => {
+      try {
+        setState((prev: AuthState) => ({
+          ...prev,
+          isLoading: true,
+          error: null,
+        }))
 
-      const updatedUser = await millionAPI.updateOwnerProfile(data)
+        const updatedOwner = await millionAPI.updateOwnerProfile(data)
 
-      setState(prev => ({
-        ...prev,
-        user: updatedUser,
-        loading: false,
-        error: null,
-      }))
-    } catch (err) {
-      setState(prev => ({
-        ...prev,
-        loading: false,
-        error: err instanceof Error ? err.message : 'Profile update failed',
-      }))
-      throw err
-    }
-  }, [])
+        setState((prev: AuthState) => ({
+          ...prev,
+          owner: updatedOwner,
+          isLoading: false,
+          error: null,
+        }))
+
+        // Mostrar toast de éxito
+        toast.showSuccess(
+          'Perfil actualizado',
+          'Tu perfil se ha actualizado correctamente'
+        )
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Profile update failed'
+        setState((prev: AuthState) => ({
+          ...prev,
+          isLoading: false,
+          error: errorMessage,
+        }))
+
+        // Mostrar toast de error
+        toast.showError('Error al actualizar perfil', errorMessage)
+        throw err
+      }
+    },
+    [toast]
+  )
+
+  // Change password
+  const changePassword = useCallback(
+    async (data: any) => {
+      try {
+        // TODO: Implement change password API call when backend endpoint is available
+        console.log('Change password requested:', data)
+        // await millionAPI.changePassword(data)
+
+        // Mostrar toast de éxito temporal
+        toast.showSuccess(
+          'Contraseña cambiada',
+          'Tu contraseña se ha cambiado correctamente'
+        )
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Change password failed'
+        console.error('Change password failed:', err)
+
+        // Mostrar toast de error
+        toast.showError('Error al cambiar contraseña', errorMessage)
+        throw err
+      }
+    },
+    [toast]
+  )
 
   // Clear error
   const clearError = useCallback(() => {
-    setState(prev => ({ ...prev, error: null }))
+    setState((prev: AuthState) => ({ ...prev, error: null }))
   }, [])
 
-  const value: AuthContextType = {
-    ...state,
+  return {
+    owner: state.owner,
+    isAuthenticated: state.isAuthenticated,
+    isLoading: state.isLoading,
+    error: state.error,
     login,
     logout,
     refreshAccessToken,
     updateProfile,
+    changePassword,
     clearError,
   }
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export function useAuth(): AuthContextType {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
-  return context
 }
 
 // Hook for checking if user is authenticated
 export function useIsAuthenticated(): boolean {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuthContext()
   return isAuthenticated
 }
 
 // Hook for getting current user
 export function useUser(): Owner | null {
-  const { user } = useAuth()
-  return user
+  const { owner } = useAuthContext()
+  return owner
 }

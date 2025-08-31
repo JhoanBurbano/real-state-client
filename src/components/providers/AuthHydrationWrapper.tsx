@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { AuthProvider } from '@/hooks/useAuth'
+import { AuthProvider } from '@/context/AuthContext'
 import { AuthFallback } from './AuthFallback'
 
 interface AuthHydrationWrapperProps {

@@ -10,7 +10,6 @@ import {
   ChevronDown,
   Home,
   Building2,
-  Calendar,
   MapPin,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'

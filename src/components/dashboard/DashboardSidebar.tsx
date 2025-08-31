@@ -14,8 +14,8 @@ import { useProperties } from '@/hooks/useProperties'
 import { useAgents } from '@/hooks/useAgents'
 
 interface DashboardSidebarProps {
-  activeTab: string
-  onTabChange: (tab: string) => void
+  activeTab: 'overview' | 'properties' | 'visits' | 'profile'
+  onTabChange: (tab: 'overview' | 'properties' | 'visits' | 'profile') => void
 }
 
 export function DashboardSidebar({
@@ -64,7 +64,11 @@ export function DashboardSidebar({
             return (
               <button
                 key={item.id}
-                onClick={() => onTabChange(item.id)}
+                onClick={() =>
+                  onTabChange(
+                    item.id as 'overview' | 'properties' | 'visits' | 'profile'
+                  )
+                }
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
                   isActive
                     ? 'bg-accent text-white shadow-md'

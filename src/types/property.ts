@@ -1,4 +1,6 @@
 // Property Types
+import type { OwnerDto } from './auth'
+
 export type PropertyType =
   | 'Apartment'
   | 'House'
@@ -279,16 +281,6 @@ export interface AmenityStats {
   poolPremium: number
   gardenPremium: number
   parkingPremium: number
-}
-
-// Search Analytics
-export interface SearchAnalytics {
-  query: string
-  totalResults: number
-  searchTime: number
-  filters: Record<string, any>
-  suggestions: string[]
-  popularSearches: string[]
 }
 
 // API Response Types

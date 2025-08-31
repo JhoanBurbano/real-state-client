@@ -18,7 +18,7 @@ export function HomePage() {
   const [filters, setFilters] = useState<Partial<PropertyFilters>>({
     minPrice: 0,
     maxPrice: 10000000,
-    propertyType: '',
+    propertyType: undefined,
     bedrooms: undefined,
     bathrooms: undefined,
     city: '',
@@ -30,7 +30,10 @@ export function HomePage() {
 
   const filteredProperties = properties.filter(property => {
     const matchesSearch =
-      property.codeInternal.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      property.codeInternal
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      false ||
       property.city.toLowerCase().includes(searchQuery.toLowerCase())
 
     const matchesPrice =
@@ -187,7 +190,7 @@ export function HomePage() {
               setFilters({
                 minPrice: 0,
                 maxPrice: 10000000,
-                propertyType: '',
+                propertyType: undefined,
                 bedrooms: undefined,
                 bathrooms: undefined,
                 city: '',
@@ -240,7 +243,7 @@ export function HomePage() {
                 setFilters({
                   minPrice: 0,
                   maxPrice: 10000000,
-                  propertyType: '',
+                  propertyType: undefined,
                   bedrooms: undefined,
                   bathrooms: undefined,
                   city: '',

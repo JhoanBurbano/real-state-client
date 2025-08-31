@@ -42,7 +42,7 @@ export function PropertyCard({ property, className = '' }: PropertyCardProps) {
         )}
         {!imageError ? (
           <Image
-            src={property.coverUrl}
+            src={property.coverUrl || '/images/placeholder-property.png'}
             alt={property.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"

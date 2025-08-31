@@ -8,12 +8,16 @@ import { PropertiesManagement } from './PropertiesManagement'
 import { ScheduledVisits } from './ScheduledVisits'
 import { AgentProfile } from './AgentProfile'
 import { DashboardStats } from './DashboardStats'
+import {
+  FadeInContainer,
+  SlideUpContainer,
+} from '@/components/ui/AnimatedContainer'
 
 type DashboardTab = 'overview' | 'properties' | 'visits' | 'profile'
 
 export function AgentDashboard() {
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview')
-  const { user, logout } = useAuthContext()
+  const { owner, logout } = useAuthContext()
 
   const handleLogout = async () => {
     try {
@@ -42,7 +46,7 @@ export function AgentDashboard() {
   return (
     <div className="min-h-screen bg-surface">
       {/* Header */}
-      <DashboardHeader user={user} onLogout={handleLogout} />
+      {/* <DashboardHeader user={owner} onLogout={handleLogout} /> */}
 
       <div className="flex">
         {/* Sidebar */}

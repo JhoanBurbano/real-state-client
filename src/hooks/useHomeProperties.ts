@@ -25,10 +25,20 @@ export function useHomeProperties() {
         ...filters,
       })
 
-      setProperties(response.items)
+      // Convert PropertyListDto to Property for compatibility
+      const convertedProperties = response.items.map(item => ({
+        ...item,
+        description: '', // PropertyListDto doesn't have description
+        isActive: true, // PropertyListDto doesn't have isActive
+        gallery: [], // PropertyListDto doesn't have gallery
+        ownerId: '', // PropertyListDto doesn't have ownerId
+        updatedAt: item.createdAt, // Use createdAt as fallback
+      })) as Property[]
+
+      setProperties(convertedProperties)
       setTotal(response.total)
       setCurrentPage(response.page)
-      setTotalPages(response.totalPages)
+      setTotalPages(Math.ceil(response.total / response.pageSize))
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to fetch properties'
@@ -56,9 +66,19 @@ export function useHomeProperties() {
           pageSize: 30, // Larger page size for home
         })
 
-        setProperties(prev => [...prev, ...response.items])
+        // Convert PropertyListDto to Property for compatibility
+        const convertedProperties = response.items.map(item => ({
+          ...item,
+          description: '', // PropertyListDto doesn't have description
+          isActive: true, // PropertyListDto doesn't have isActive
+          gallery: [], // PropertyListDto doesn't have gallery
+          ownerId: '', // PropertyListDto doesn't have ownerId
+          updatedAt: item.createdAt, // Use createdAt as fallback
+        })) as Property[]
+
+        setProperties(prev => [...prev, ...convertedProperties])
         setCurrentPage(response.page)
-        setTotalPages(response.totalPages)
+        setTotalPages(Math.ceil(response.total / response.pageSize))
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'Failed to load more properties'

@@ -1,87 +1,131 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   User,
   Mail,
   Phone,
   MapPin,
-  Building2,
   Star,
   Award,
   Edit,
   Save,
   X,
+  Building,
+  Globe,
+  Linkedin,
+  Twitter,
+  Instagram,
+  Facebook,
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card } from '@/components/ui/Card'
 import { useAuthContext } from '@/context/AuthContext'
+import { useOwnerProfile } from '@/hooks/useOwnerProfile'
+import type { UpdateOwnerRequest } from '@/types'
 
 export function AgentProfile() {
-  const { user } = useAuthContext()
+  const { owner } = useAuthContext()
+  const { profile, isLoading, error, updateProfile } = useOwnerProfile()
   const [isEditing, setIsEditing] = useState(false)
-  const [profileData, setProfileData] = useState({
-    fullName: user?.fullName || 'John Doe',
-    email: user?.email || 'john.doe@millionrealestate.com',
-    phone: user?.phoneE164 || '+1 (555) 123-4567',
-    title: user?.title || 'Senior Real Estate Agent',
-    bio:
-      user?.bio ||
-      'Experienced real estate professional with over 10 years in the luxury market. Specializing in waterfront properties and high-end residential sales.',
-    experience: user?.experience || '10+ years',
-    propertiesSold: user?.propertiesSold || 45,
-    rating: user?.rating || 4.8,
-    location: user?.location || 'Miami, FL',
-    specialties: user?.specialties || [
-      'Waterfront Properties',
-      'Luxury Homes',
-      'Investment Properties',
-    ],
-    languages: user?.languages || ['English', 'Spanish'],
-    certifications: user?.certifications || [
-      'Licensed Real Estate Agent',
-      'Certified Luxury Home Specialist',
-    ],
+  const [profileData, setProfileData] = useState<UpdateOwnerRequest>({
+    fullName: '',
+    phoneE164: '',
+    bio: '',
+    specialties: [],
+    languages: [],
+    certifications: [],
+    socialMedia: {
+      linkedin: '',
+      twitter: '',
+      instagram: '',
+      facebook: '',
+    },
   })
+
+  // Update profileData when profile changes
+  useEffect(() => {
+    if (profile) {
+      setProfileData({
+        fullName: profile.fullName,
+        phoneE164: profile.phoneE164,
+        bio: profile.bio,
+        specialties: profile.specialties,
+        languages: profile.languages,
+        certifications: profile.certifications,
+        socialMedia: profile.socialMedia,
+      })
+    }
+  }, [profile])
 
   const handleSave = async () => {
     try {
-      // TODO: Implement API call to update profile when backend endpoint is available
-      console.log('Saving profile:', profileData)
-      // await millionAPI.updateOwnerProfile(user?.id, profileData)
-      setIsEditing(false)
+      const updatedProfile = await updateProfile(profileData)
+      if (updatedProfile) {
+        setIsEditing(false)
+      }
     } catch (error) {
       console.error('Error saving profile:', error)
     }
   }
 
   const handleCancel = () => {
-    // Reset to original data
-    setProfileData({
-      fullName: user?.fullName || 'John Doe',
-      email: user?.email || 'john.doe@millionrealestate.com',
-      phone: user?.phoneE164 || '+1 (555) 123-4567',
-      title: user?.title || 'Senior Real Estate Agent',
-      bio:
-        user?.bio ||
-        'Experienced real estate professional with over 10 years in the luxury market. Specializing in waterfront properties and high-end residential sales.',
-      experience: user?.experience || '10+ years',
-      propertiesSold: user?.propertiesSold || 45,
-      rating: user?.rating || 4.8,
-      location: user?.location || 'Miami, FL',
-      specialties: user?.specialties || [
-        'Waterfront Properties',
-        'Luxury Homes',
-        'Investment Properties',
-      ],
-      languages: user?.languages || ['English', 'Spanish'],
-      certifications: user?.certifications || [
-        'Licensed Real Estate Agent',
-        'Certified Luxury Home Specialist',
-      ],
-    })
+    // Reset to original data from profile
+    if (profile) {
+      setProfileData({
+        fullName: profile.fullName,
+        phoneE164: profile.phoneE164,
+        bio: profile.bio,
+        specialties: profile.specialties,
+        languages: profile.languages,
+        certifications: profile.certifications,
+        socialMedia: profile.socialMedia,
+      })
+    }
     setIsEditing(false)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-text mb-2">Agent Profile</h1>
+            <p className="text-text-muted">Loading profile...</p>
+          </div>
+        </div>
+        <div className="animate-pulse">
+          <Card className="p-6">
+            <div className="h-32 bg-gray-200 rounded-lg mb-4"></div>
+            <div className="space-y-3">
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-text mb-2">Agent Profile</h1>
+            <p className="text-text-muted">Error loading profile</p>
+          </div>
+        </div>
+        <Card className="p-6">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()}>Retry</Button>
+          </div>
+        </Card>
+      </div>
+    )
   }
 
   return (
@@ -125,252 +169,359 @@ export function AgentProfile() {
         </div>
       </div>
 
+      {/* Profile Information */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profile Card */}
-        <div className="lg:col-span-1">
-          <Card className="p-6 text-center">
-            <div className="w-32 h-32 bg-accent rounded-full mx-auto mb-4 flex items-center justify-center">
-              <User className="h-16 w-16 text-white" />
-            </div>
-
-            {isEditing ? (
-              <Input
-                value={profileData.fullName}
-                onChange={e =>
-                  setProfileData({ ...profileData, fullName: e.target.value })
-                }
-                className="text-xl font-bold text-center mb-2"
-              />
-            ) : (
-              <h2 className="text-xl font-bold text-text mb-2">
-                {profileData.fullName}
-              </h2>
-            )}
-
-            {isEditing ? (
-              <Input
-                value={profileData.title}
-                onChange={e =>
-                  setProfileData({ ...profileData, title: e.target.value })
-                }
-                className="text-text-muted text-center mb-4"
-              />
-            ) : (
-              <p className="text-text-muted mb-4">{profileData.title}</p>
-            )}
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-accent">
-                  {profileData.propertiesSold}
-                </div>
-                <div className="text-sm text-text-muted">Properties Sold</div>
+        {/* Main Profile Card */}
+        <div className="lg:col-span-2">
+          <Card className="p-6">
+            <div className="flex items-start space-x-4 mb-6">
+              <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center">
+                <User className="h-10 w-10 text-white" />
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-accent">
-                  {profileData.rating}
-                </div>
-                <div className="text-sm text-text-muted">Rating</div>
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-text mb-2">
+                  {isEditing ? (
+                    <Input
+                      value={profileData.fullName || ''}
+                      onChange={e =>
+                        setProfileData({
+                          ...profileData,
+                          fullName: e.target.value,
+                        })
+                      }
+                      placeholder="Full Name"
+                    />
+                  ) : (
+                    profile?.fullName || owner?.fullName || 'John Doe'
+                  )}
+                </h2>
+                <p className="text-text-muted">
+                  {profile?.role || owner?.role || 'Real Estate Agent'}
+                </p>
               </div>
             </div>
 
-            {/* Rating Stars */}
-            <div className="flex justify-center space-x-1 mb-4">
-              {[1, 2, 3, 4, 5].map(star => (
-                <Star
-                  key={star}
-                  className={`h-5 w-5 ${
-                    star <= Math.floor(profileData.rating)
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-
-            {/* Contact Info */}
-            <div className="space-y-2 text-left">
-              <div className="flex items-center space-x-2">
-                <Mail className="h-4 w-4 text-text-muted" />
-                <span className="text-sm text-text">{profileData.email}</span>
+            {/* Contact Information */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <Mail className="h-5 w-5 text-accent" />
+                <span className="text-text-muted">
+                  {profile?.email || owner?.email || 'email@example.com'}
+                </span>
               </div>
-              <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4 text-text-muted" />
-                <span className="text-sm text-text">{profileData.phone}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-text-muted" />
-                <span className="text-sm text-text">
-                  {profileData.location}
+              <div className="flex items-center space-x-3">
+                <Phone className="h-5 w-5 text-accent" />
+                <span className="text-text-muted">
+                  {isEditing ? (
+                    <Input
+                      value={profileData.phoneE164 || ''}
+                      onChange={e =>
+                        setProfileData({
+                          ...profileData,
+                          phoneE164: e.target.value,
+                        })
+                      }
+                      placeholder="Phone Number"
+                    />
+                  ) : (
+                    profile?.phoneE164 ||
+                    owner?.phoneE164 ||
+                    '+1 (555) 123-4567'
+                  )}
                 </span>
               </div>
             </div>
+
+            {/* Bio */}
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold text-text mb-2">Bio</h3>
+              {isEditing ? (
+                <textarea
+                  value={profileData.bio || ''}
+                  onChange={e =>
+                    setProfileData({ ...profileData, bio: e.target.value })
+                  }
+                  className="w-full p-3 border border-line rounded-lg resize-none"
+                  rows={4}
+                  placeholder="Tell us about yourself..."
+                />
+              ) : (
+                <p className="text-text-muted">
+                  {profile?.bio || 'No bio available'}
+                </p>
+              )}
+            </div>
           </Card>
         </div>
 
-        {/* Profile Details */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* About */}
+        {/* Stats Card */}
+        <div>
           <Card className="p-6">
-            <h3 className="text-lg font-semibold text-text mb-4">About</h3>
-            {isEditing ? (
-              <textarea
-                value={profileData.bio}
-                onChange={e =>
-                  setProfileData({ ...profileData, bio: e.target.value })
-                }
-                className="w-full p-3 border border-line rounded-lg resize-none"
-                rows={4}
-                placeholder="Tell us about yourself..."
-              />
-            ) : (
-              <p className="text-text-muted leading-relaxed">
-                {profileData.bio}
-              </p>
-            )}
-          </Card>
-
-          {/* Experience & Stats */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-text mb-4">
-              Experience & Stats
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-text-muted mb-2">
-                  Years of Experience
-                </label>
-                {isEditing ? (
-                  <Input
-                    value={profileData.experience}
-                    onChange={e =>
-                      setProfileData({
-                        ...profileData,
-                        experience: e.target.value,
-                      })
-                    }
-                  />
-                ) : (
-                  <p className="text-text">{profileData.experience}</p>
-                )}
+            <h3 className="text-lg font-semibold text-text mb-4">Statistics</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-text-muted">Properties</span>
+                <span className="font-semibold text-text">
+                  {profile?.propertiesCount || 0}
+                </span>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-text-muted mb-2">
-                  Properties Sold
-                </label>
-                {isEditing ? (
-                  <Input
-                    type="number"
-                    value={profileData.propertiesSold}
-                    onChange={e =>
-                      setProfileData({
-                        ...profileData,
-                        propertiesSold: parseInt(e.target.value) || 0,
-                      })
-                    }
-                  />
-                ) : (
-                  <p className="text-text">{profileData.propertiesSold}</p>
-                )}
+              <div className="flex items-center justify-between">
+                <span className="text-text-muted">Total Value</span>
+                <span className="font-semibold text-text">
+                  ${(profile?.totalValue || 0).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-text-muted">Experience</span>
+                <span className="font-semibold text-text">
+                  {profile?.experience || 0} years
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-text-muted">Rating</span>
+                <div className="flex items-center space-x-1">
+                  <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                  <span className="font-semibold text-text">
+                    {profile?.averageRating?.toFixed(1) || 'N/A'}
+                  </span>
+                </div>
               </div>
             </div>
           </Card>
+        </div>
+      </div>
 
-          {/* Specialties */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold text-text mb-4">
-              Specialties
-            </h3>
+      {/* Specialties */}
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold text-text mb-4">Specialties</h3>
+        {isEditing ? (
+          <div className="space-y-2">
+            {profileData.specialties?.map((specialty, index) => (
+              <Input
+                key={index}
+                value={specialty}
+                onChange={e => {
+                  const newSpecialties = [...(profileData.specialties || [])]
+                  newSpecialties[index] = e.target.value
+                  setProfileData({
+                    ...profileData,
+                    specialties: newSpecialties,
+                  })
+                }}
+                placeholder="Specialty"
+              />
+            ))}
+            <Button
+              variant="outline"
+              onClick={() =>
+                setProfileData({
+                  ...profileData,
+                  specialties: [...(profileData.specialties || []), ''],
+                })
+              }
+            >
+              Add Specialty
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {profile?.specialties?.map((specialty, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-accent/10 text-accent rounded-full text-sm"
+              >
+                {specialty}
+              </span>
+            )) || (
+              <span className="text-text-muted">No specialties listed</span>
+            )}
+          </div>
+        )}
+      </Card>
+
+      {/* Languages */}
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold text-text mb-4">Languages</h3>
+        {isEditing ? (
+          <div className="space-y-2">
+            {profileData.languages?.map((language, index) => (
+              <Input
+                key={index}
+                value={language}
+                onChange={e => {
+                  const newLanguages = [...(profileData.languages || [])]
+                  newLanguages[index] = e.target.value
+                  setProfileData({ ...profileData, languages: newLanguages })
+                }}
+                placeholder="Language"
+              />
+            ))}
+            <Button
+              variant="outline"
+              onClick={() =>
+                setProfileData({
+                  ...profileData,
+                  languages: [...(profileData.languages || []), ''],
+                })
+              }
+            >
+              Add Language
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {profile?.languages?.map((language, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm"
+              >
+                {language}
+              </span>
+            )) || <span className="text-text-muted">No languages listed</span>}
+          </div>
+        )}
+      </Card>
+
+      {/* Certifications */}
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold text-text mb-4">Certifications</h3>
+        {isEditing ? (
+          <div className="space-y-2">
+            {profileData.certifications?.map((cert, index) => (
+              <Input
+                key={index}
+                value={cert}
+                onChange={e => {
+                  const newCerts = [...(profileData.certifications || [])]
+                  newCerts[index] = e.target.value
+                  setProfileData({ ...profileData, certifications: newCerts })
+                }}
+                placeholder="Certification"
+              />
+            ))}
+            <Button
+              variant="outline"
+              onClick={() =>
+                setProfileData({
+                  ...profileData,
+                  certifications: [...(profileData.certifications || []), ''],
+                })
+              }
+            >
+              Add Certification
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {profile?.certifications?.map((cert, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm flex items-center space-x-1"
+              >
+                <Award className="h-3 w-3" />
+                <span>{cert}</span>
+              </span>
+            )) || (
+              <span className="text-text-muted">No certifications listed</span>
+            )}
+          </div>
+        )}
+      </Card>
+
+      {/* Social Media */}
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold text-text mb-4">Social Media</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-center space-x-3">
+            <Linkedin className="h-5 w-5 text-blue-600" />
             {isEditing ? (
               <Input
-                value={profileData.specialties.join(', ')}
+                value={profileData.socialMedia?.linkedin || ''}
                 onChange={e =>
                   setProfileData({
                     ...profileData,
-                    specialties: e.target.value
-                      .split(', ')
-                      .filter(s => s.trim()),
+                    socialMedia: {
+                      ...profileData.socialMedia,
+                      linkedin: e.target.value,
+                    },
                   })
                 }
-                placeholder="Enter specialties separated by commas"
+                placeholder="LinkedIn URL"
               />
             ) : (
-              <div className="flex flex-wrap gap-2">
-                {profileData.specialties.map((specialty, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-accent/10 text-accent rounded-full text-sm"
-                  >
-                    {specialty}
-                  </span>
-                ))}
-              </div>
+              <span className="text-text-muted">
+                {profile?.socialMedia?.linkedin || 'Not provided'}
+              </span>
             )}
-          </Card>
-
-          {/* Languages & Certifications */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold text-text mb-4">
-                Languages
-              </h3>
-              {isEditing ? (
-                <Input
-                  value={profileData.languages.join(', ')}
-                  onChange={e =>
-                    setProfileData({
-                      ...profileData,
-                      languages: e.target.value
-                        .split(', ')
-                        .filter(s => s.trim()),
-                    })
-                  }
-                  placeholder="Enter languages separated by commas"
-                />
-              ) : (
-                <div className="space-y-2">
-                  {profileData.languages.map((language, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-accent rounded-full"></div>
-                      <span className="text-text">{language}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card>
-
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold text-text mb-4">
-                Certifications
-              </h3>
-              {isEditing ? (
-                <Input
-                  value={profileData.certifications.join(', ')}
-                  onChange={e =>
-                    setProfileData({
-                      ...profileData,
-                      certifications: e.target.value
-                        .split(', ')
-                        .filter(s => s.trim()),
-                    })
-                  }
-                  placeholder="Enter certifications separated by commas"
-                />
-              ) : (
-                <div className="space-y-2">
-                  {profileData.certifications.map((cert, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <Award className="h-4 w-4 text-accent" />
-                      <span className="text-text">{cert}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Twitter className="h-5 w-5 text-blue-400" />
+            {isEditing ? (
+              <Input
+                value={profileData.socialMedia?.twitter || ''}
+                onChange={e =>
+                  setProfileData({
+                    ...profileData,
+                    socialMedia: {
+                      ...profileData.socialMedia,
+                      twitter: e.target.value,
+                    },
+                  })
+                }
+                placeholder="Twitter URL"
+              />
+            ) : (
+              <span className="text-text-muted">
+                {profile?.socialMedia?.twitter || 'Not provided'}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center space-x-3">
+            <Instagram className="h-5 w-5 text-pink-600" />
+            {isEditing ? (
+              <Input
+                value={profileData.socialMedia?.instagram || ''}
+                onChange={e =>
+                  setProfileData({
+                    ...profileData,
+                    socialMedia: {
+                      ...profileData.socialMedia,
+                      instagram: e.target.value,
+                    },
+                  })
+                }
+                placeholder="Instagram URL"
+              />
+            ) : (
+              <span className="text-text-muted">
+                {profile?.socialMedia?.instagram || 'Not provided'}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center space-x-3">
+            <Facebook className="h-5 w-5 text-blue-800" />
+            {isEditing ? (
+              <Input
+                value={profileData.socialMedia?.facebook || ''}
+                onChange={e =>
+                  setProfileData({
+                    ...profileData,
+                    socialMedia: {
+                      ...profileData.socialMedia,
+                      facebook: e.target.value,
+                    },
+                  })
+                }
+                placeholder="Facebook URL"
+              />
+            ) : (
+              <span className="text-text-muted">
+                {profile?.socialMedia?.facebook || 'Not provided'}
+              </span>
+            )}
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   )
 }

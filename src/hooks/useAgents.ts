@@ -212,7 +212,9 @@ export function useAgent(agentId: string) {
       try {
         // Note: This would need a backend endpoint to update agent availability
         // For now, we'll just update the local state
-        setAvailability(prev => (prev ? { ...prev, ...newAvailability } : null))
+        setAvailability((prev: AgentAvailability | null) =>
+          prev ? { ...prev, ...newAvailability } : null
+        )
       } catch (err) {
         setError(
           err instanceof Error
@@ -242,7 +244,7 @@ export function useAgent(agentId: string) {
           id: `temp-${Date.now()}`,
           date: new Date().toISOString(),
         }
-        setTestimonials(prev => [...prev, newTestimonial])
+        setTestimonials((prev: AgentTestimonial[]) => [...prev, newTestimonial])
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'Failed to add testimonial'

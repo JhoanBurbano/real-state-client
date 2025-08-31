@@ -18,6 +18,7 @@ import { PropertyImage } from '@/components/ui/PropertyImage'
 import { useProperties } from '@/hooks/useProperties'
 import { PropertyForm } from './PropertyForm'
 import { PropertyModal } from './PropertyModal'
+import { millionAPI } from '@/lib/api/million-api'
 import type { Property } from '@/types'
 
 export function PropertiesManagement() {
@@ -305,8 +306,28 @@ export function PropertiesManagement() {
                   savedProperty
                 )
               } else {
-                // Create new property
-                await millionAPI.createProperty(savedProperty)
+                // Create new property - convert to CreatePropertyRequest
+                const createRequest = {
+                  name: savedProperty.name || '',
+                  description: savedProperty.description || '',
+                  address: savedProperty.address || '',
+                  city: savedProperty.city || '',
+                  neighborhood: savedProperty.neighborhood,
+                  propertyType: savedProperty.propertyType || 'House',
+                  price: savedProperty.price || 0,
+                  size: savedProperty.size || 0,
+                  year: savedProperty.year,
+                  bedrooms: savedProperty.bedrooms || 0,
+                  bathrooms: savedProperty.bathrooms || 0,
+                  hasPool: savedProperty.hasPool || false,
+                  hasGarden: savedProperty.hasGarden || false,
+                  hasParking: savedProperty.hasParking || false,
+                  isFurnished: savedProperty.isFurnished || false,
+                  availableFrom: savedProperty.availableFrom,
+                  availableTo: savedProperty.availableTo,
+                  codeInternal: savedProperty.codeInternal,
+                }
+                await millionAPI.createProperty(createRequest)
               }
               // Refresh properties list
               // fetchProperties()

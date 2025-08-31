@@ -348,6 +348,9 @@ export interface TraceLog {
 }
 
 // Utility Types
+import type { PaginationInfo } from './property'
+import type { ApiError } from './auth'
+
 export interface SortOptions {
   field: string
   order: 'asc' | 'desc'
@@ -439,4 +442,3 @@ export interface BulkOperationResponse {
     data?: any
   }>
 }
-

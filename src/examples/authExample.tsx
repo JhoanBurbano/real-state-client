@@ -5,7 +5,7 @@ import { ProtectedRoute } from '../components/auth/ProtectedRoute'
 // Example of how to use the authentication system
 
 export const AuthExample: React.FC = () => {
-  const { isAuthenticated, isLoading, user, login, logout } = useAuthContext()
+  const { isAuthenticated, isLoading, login, logout } = useAuthContext()
 
   const handleLogin = async () => {
     try {

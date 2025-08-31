@@ -126,7 +126,7 @@ class MillionAPI {
 
   // ===== AUTHENTICATION ENDPOINTS =====
   async login(email: string, password: string): Promise<LoginResponse> {
-    const response = await fetch(`${this.baseUrl}/auth/login`, {
+    const response = await fetch(`${this.baseUrl}/auth/owner/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ class MillionAPI {
       throw new Error('No refresh token available')
     }
 
-    const response = await fetch(`${this.baseUrl}/auth/refresh`, {
+    const response = await fetch(`${this.baseUrl}/auth/owner/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -187,7 +187,7 @@ class MillionAPI {
     }
 
     try {
-      await fetch(`${this.baseUrl}/auth/logout`, {
+      await fetch(`${this.baseUrl}/auth/owner/logout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -210,7 +210,7 @@ class MillionAPI {
   async changePassword(
     data: ChangePasswordRequest
   ): Promise<{ message: string }> {
-    const response = await fetch(`${this.baseUrl}/auth/change-password`, {
+    const response = await fetch(`${this.baseUrl}/auth/owner/change-password`, {
       method: 'POST',
       headers: this.getAuthHeaders(),
       body: JSON.stringify(data),
@@ -493,9 +493,76 @@ class MillionAPI {
   }
 
   // ===== PROPERTY MEDIA MANAGEMENT =====
+
+  // Update property cover image/video
+  async updatePropertyCover(
+    id: string,
+    coverData: {
+      url: string
+      type: 'Image' | 'Video'
+      poster?: string
+    }
+  ): Promise<PropertyDetailDto> {
+    const response = await fetch(`${this.baseUrl}/properties/${id}/cover`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify(coverData),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.detail || 'Failed to update property cover')
+    }
+
+    return response.json()
+  }
+
+  // Update property gallery
+  async updatePropertyGallery(
+    id: string,
+    galleryData: {
+      gallery: Array<{
+        url: string
+        type: 'Image' | 'Video'
+        index: number
+        featured: boolean
+        poster?: string
+      }>
+    }
+  ): Promise<PropertyDetailDto> {
+    const response = await fetch(`${this.baseUrl}/properties/${id}/gallery`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify(galleryData),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.detail || 'Failed to update property gallery')
+    }
+
+    return response.json()
+  }
+
+  // Add/Update/Delete individual media
   async updatePropertyMedia(
     id: string,
-    mediaData: MediaPatchDto
+    mediaData: {
+      action: 'Add' | 'Update' | 'Delete' | 'Toggle'
+      media?: {
+        url: string
+        type: 'Image' | 'Video'
+        index: number
+        featured: boolean
+        poster?: string
+      }
+      mediaId?: string
+      updates?: {
+        featured?: boolean
+        index?: number
+        enabled?: boolean
+      }
+    }
   ): Promise<PropertyDetailDto> {
     const response = await fetch(`${this.baseUrl}/properties/${id}/media`, {
       method: 'PATCH',
@@ -511,28 +578,39 @@ class MillionAPI {
     return response.json()
   }
 
-  async getPropertyMedia(
-    id: string,
-    filters?: {
-      type?: string
-      featured?: boolean
-      page?: number
-      pageSize?: number
+  // Get property media
+  async getPropertyMedia(id: string): Promise<{
+    cover: {
+      type: 'Image' | 'Video'
+      url: string
+      index: number
+      poster?: string
     }
-  ): Promise<MediaDto[]> {
-    const params = new URLSearchParams()
-    if (filters) {
-      if (filters.type) params.append('type', filters.type)
-      if (filters.featured !== undefined)
-        params.append('featured', filters.featured.toString())
-      if (filters.page) params.append('page', filters.page.toString())
-      if (filters.pageSize)
-        params.append('pageSize', filters.pageSize.toString())
-    }
-
-    const response = await fetch(
-      `${this.baseUrl}/properties/${id}/media?${params}`
-    )
+    featuredMedia: Array<{
+      id: string
+      type: 'Image' | 'Video'
+      url: string
+      index: number
+      featured: boolean
+      enabled: boolean
+      poster?: string
+    }>
+    allMedia: Array<{
+      id: string
+      type: 'Image' | 'Video'
+      url: string
+      index: number
+      featured: boolean
+      enabled: boolean
+      poster?: string
+    }>
+    totalCount: number
+    featuredCount: number
+  }> {
+    const response = await fetch(`${this.baseUrl}/properties/${id}/media`, {
+      method: 'GET',
+      headers: this.getAuthHeaders(),
+    })
 
     if (!response.ok) {
       const error = await response.json()
@@ -648,14 +726,60 @@ class MillionAPI {
   async advancedSearch(
     searchRequest: AdvancedSearchRequest
   ): Promise<PagedResult<PropertyListDto>> {
-    const response = await fetch(`${this.baseUrl}/properties/search`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Correlation-ID': this.correlationId || '',
-      },
-      body: JSON.stringify(searchRequest),
-    })
+    const params = new URLSearchParams()
+
+    // Add search parameters
+    if (searchRequest.query) params.append('query', searchRequest.query)
+    if (searchRequest.filters?.city)
+      params.append('city', searchRequest.filters.city)
+    if (searchRequest.filters?.propertyType)
+      params.append('propertyType', searchRequest.filters.propertyType)
+    if (searchRequest.filters?.priceRange?.min)
+      params.append('minPrice', searchRequest.filters.priceRange.min.toString())
+    if (searchRequest.filters?.priceRange?.max)
+      params.append('maxPrice', searchRequest.filters.priceRange.max.toString())
+    if (searchRequest.filters?.rooms?.minBedrooms)
+      params.append(
+        'bedrooms',
+        searchRequest.filters.rooms.minBedrooms.toString()
+      )
+    if (searchRequest.filters?.rooms?.minBathrooms)
+      params.append(
+        'bathrooms',
+        searchRequest.filters.rooms.minBathrooms.toString()
+      )
+    if (searchRequest.filters?.amenities?.hasPool !== undefined)
+      params.append(
+        'hasPool',
+        searchRequest.filters.amenities.hasPool.toString()
+      )
+    if (searchRequest.filters?.amenities?.hasGarden !== undefined)
+      params.append(
+        'hasGarden',
+        searchRequest.filters.amenities.hasGarden.toString()
+      )
+    if (searchRequest.filters?.amenities?.hasParking !== undefined)
+      params.append(
+        'hasParking',
+        searchRequest.filters.amenities.hasParking.toString()
+      )
+    if (searchRequest.filters?.status)
+      params.append('status', searchRequest.filters.status)
+    if (searchRequest.pagination?.page)
+      params.append('page', searchRequest.pagination.page.toString())
+    if (searchRequest.pagination?.pageSize)
+      params.append('pageSize', searchRequest.pagination.pageSize.toString())
+
+    const response = await fetch(
+      `${this.baseUrl}/properties/advanced?${params}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Correlation-ID': this.correlationId || '',
+        },
+      }
+    )
 
     if (!response.ok) {
       const error = await response.json()
@@ -821,7 +945,7 @@ class MillionAPI {
   }
 
   async getOwnerProfile(): Promise<OwnerDto> {
-    const response = await fetch(`${this.baseUrl}/owners/profile`, {
+    const response = await fetch(`${this.baseUrl}/auth/owner/profile`, {
       headers: this.getAuthHeaders(),
     })
 
@@ -834,7 +958,7 @@ class MillionAPI {
   }
 
   async updateOwnerProfile(ownerData: UpdateOwnerRequest): Promise<OwnerDto> {
-    const response = await fetch(`${this.baseUrl}/owners/profile`, {
+    const response = await fetch(`${this.baseUrl}/auth/owner/profile`, {
       method: 'PUT',
       headers: this.getAuthHeaders(),
       body: JSON.stringify(ownerData),
@@ -843,6 +967,77 @@ class MillionAPI {
     if (!response.ok) {
       const error = await response.json()
       throw new Error(error.detail || 'Failed to update owner profile')
+    }
+
+    return response.json()
+  }
+
+  // ===== OWNER PROPERTIES ENDPOINTS =====
+  async getOwnerProperties(
+    page: number = 1,
+    pageSize: number = 20
+  ): Promise<{
+    items: PropertyListDto[]
+    totalCount: number
+    page: number
+    pageSize: number
+    totalPages: number
+  }> {
+    const response = await fetch(
+      `${this.baseUrl}/auth/owner/properties?page=${page}&pageSize=${pageSize}`,
+      {
+        method: 'GET',
+        headers: this.getAuthHeaders(),
+      }
+    )
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.detail || 'Failed to fetch owner properties')
+    }
+
+    return response.json()
+  }
+
+  async getOwnerPropertyById(id: string): Promise<PropertyDetailDto> {
+    const response = await fetch(
+      `${this.baseUrl}/auth/owner/properties/${id}`,
+      {
+        method: 'GET',
+        headers: this.getAuthHeaders(),
+      }
+    )
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.detail || 'Failed to fetch owner property')
+    }
+
+    return response.json()
+  }
+
+  // ===== OWNER PROPERTY STATS ENDPOINTS =====
+  async getOwnerPropertyStats(): Promise<{
+    totalProperties: number
+    activeProperties: number
+    soldProperties: number
+    offMarketProperties: number
+    totalValue: number
+    averagePrice: number
+    propertiesByType: Record<string, number>
+    propertiesByCity: Record<string, number>
+  }> {
+    const response = await fetch(
+      `${this.baseUrl}/auth/owner/properties/stats`,
+      {
+        method: 'GET',
+        headers: this.getAuthHeaders(),
+      }
+    )
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.detail || 'Failed to fetch owner property stats')
     }
 
     return response.json()
@@ -1425,6 +1620,13 @@ class MillionAPI {
 
     if (this.accessToken) {
       headers.Authorization = `Bearer ${this.accessToken}`
+      console.log('🔐 Token enviado en headers:', {
+        token: this.accessToken.substring(0, 20) + '...',
+        hasToken: !!this.accessToken,
+        headers,
+      })
+    } else {
+      console.warn('⚠️ No hay token de acceso disponible')
     }
 
     return headers
@@ -1434,6 +1636,15 @@ class MillionAPI {
     if (typeof window !== 'undefined') {
       localStorage.setItem('million_access_token', this.accessToken || '')
       localStorage.setItem('million_refresh_token', this.refreshToken || '')
+
+      console.log('💾 Tokens guardados en localStorage:', {
+        accessToken: this.accessToken
+          ? this.accessToken.substring(0, 20) + '...'
+          : 'null',
+        refreshToken: this.refreshToken
+          ? this.refreshToken.substring(0, 20) + '...'
+          : 'null',
+      })
     }
   }
 
@@ -1448,6 +1659,17 @@ class MillionAPI {
     if (typeof window !== 'undefined') {
       this.accessToken = localStorage.getItem('million_access_token')
       this.refreshToken = localStorage.getItem('million_refresh_token')
+
+      console.log('📦 Tokens cargados desde localStorage:', {
+        accessToken: this.accessToken
+          ? this.accessToken.substring(0, 20) + '...'
+          : 'null',
+        refreshToken: this.refreshToken
+          ? this.refreshToken.substring(0, 20) + '...'
+          : 'null',
+        hasAccessToken: !!this.accessToken,
+        hasRefreshToken: !!this.refreshToken,
+      })
     }
   }
 
@@ -1470,6 +1692,29 @@ class MillionAPI {
 
   getCorrelationId(): string | null {
     return this.correlationId
+  }
+
+  // ===== PUBLIC SETTERS =====
+  setTokens(accessToken: string, refreshToken: string): void {
+    console.log('🔑 Tokens sincronizados con millionAPI:', {
+      accessToken: accessToken ? accessToken.substring(0, 20) + '...' : 'null',
+      refreshToken: refreshToken
+        ? refreshToken.substring(0, 20) + '...'
+        : 'null',
+      hasAccessToken: !!accessToken,
+      hasRefreshToken: !!refreshToken,
+    })
+
+    this.accessToken = accessToken
+    this.refreshToken = refreshToken
+    this.saveToStorage()
+  }
+
+  clearTokens(): void {
+    console.log('🗑️ Tokens limpiados de millionAPI')
+    this.accessToken = null
+    this.refreshToken = null
+    this.clearStorage()
   }
 
   // ===== DEBUG INFORMATION =====

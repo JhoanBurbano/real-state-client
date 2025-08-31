@@ -22,7 +22,9 @@ export function PropertyImage({
 
   const imageUrl =
     property.coverUrl ||
-    (property.media && property.media.length > 0 ? property.media[0].url : null)
+    (property.gallery && property.gallery.length > 0
+      ? property.gallery[0].url
+      : null)
 
   const imageAlt = alt || property.name
 

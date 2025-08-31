@@ -4,7 +4,11 @@ import { useState } from 'react'
 import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuthContext } from '@/context/AuthContext'
+import {
+  FadeInContainer,
+  SlideUpContainer,
+} from '@/components/ui/AnimatedContainer'
 
 interface LoginFormProps {
   onSuccess?: () => void
@@ -17,7 +21,7 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const { login, loading } = useAuth()
+  const { login, isLoading } = useAuthContext()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,8 +60,11 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="bg-surface-elev rounded-2xl p-8 shadow-luxury-md">
+    <FadeInContainer className="w-full max-w-md mx-auto">
+      <SlideUpContainer
+        className="bg-surface-elev rounded-2xl p-8 shadow-luxury-md"
+        delay={0.2}
+      >
         <div className="text-center mb-8">
           <h2 className="font-playfair text-3xl font-bold text-text mb-2">
             Welcome to MILLION
@@ -86,7 +93,7 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
                 placeholder="Enter your email"
                 className="pl-10"
                 required
-                disabled={loading}
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -108,13 +115,13 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
                 onChange={e => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 className="pl-10 pr-10"
-                disabled={loading}
+                disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-muted hover:text-text"
-                disabled={loading}
+                disabled={isLoading}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -133,8 +140,13 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
           )}
 
           {/* Submit Button */}
-          <Button type="submit" className="w-full" size="lg" disabled={loading}>
-            {loading ? (
+          <Button
+            type="submit"
+            className="w-full"
+            size="lg"
+            disabled={isLoading}
+          >
+            {isLoading ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 Signing In...
@@ -151,9 +163,9 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
             className="w-full"
             size="lg"
             onClick={handleDemoLogin}
-            disabled={loading}
+            disabled={isLoading}
           >
-            {loading ? (
+            {isLoading ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 Signing In...
@@ -170,7 +182,7 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
             Demo credentials: carlos.rodriguez@million.com / test-password
           </p>
         </div>
-      </div>
-    </div>
+      </SlideUpContainer>
+    </FadeInContainer>
   )
 }

@@ -122,7 +122,7 @@ export function PropertyDetailPage({ propertyId }: PropertyDetailPageProps) {
         {/* Main Image */}
         <div className="relative h-96 lg:h-[600px] overflow-hidden">
           <Image
-            src={property.coverUrl}
+            src={property.coverUrl || '/placeholder-property.png'}
             alt={property.name}
             fill
             className="object-cover"
@@ -169,10 +169,10 @@ export function PropertyDetailPage({ propertyId }: PropertyDetailPageProps) {
         </div>
 
         {/* Image Thumbnails */}
-        {property.media && property.media.length > 1 && (
+        {property.gallery && property.gallery.length > 1 && (
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
             <div className="flex space-x-2">
-              {property.media.slice(0, 5).map((media, index) => (
+              {property.gallery.slice(0, 5).map((media: any, index: number) => (
                 <button
                   key={media.id}
                   onClick={() => setSelectedImageIndex(index)}

@@ -1,15 +1,19 @@
 'use client'
 
 import React, { createContext, useContext, ReactNode } from 'react'
-import { useAuth } from '../hooks/useAuthNew'
+import { useAuth } from '../hooks/useAuth'
 
 interface AuthContextType {
+  owner: any
   isAuthenticated: boolean
   isLoading: boolean
-  user: any
-  login: (email: string, password: string) => Promise<any>
+  error: string | null
+  login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
-  refreshToken: () => Promise<any>
+  refreshAccessToken: () => Promise<void>
+  updateProfile: (data: any) => Promise<void>
+  changePassword: (data: any) => Promise<void>
+  clearError: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)

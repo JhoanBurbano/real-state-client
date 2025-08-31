@@ -226,9 +226,9 @@ export function AgentsPage() {
                             {specialty}
                           </Badge>
                         ))}
-                      {agent?.specialties?.length > 2 && (
+                      {agent?.specialties && agent.specialties.length > 2 && (
                         <Badge variant="outline" className="text-xs">
-                          +{agent?.specialties?.length - 2} more
+                          +{agent.specialties.length - 2} more
                         </Badge>
                       )}
                     </div>
@@ -244,10 +244,10 @@ export function AgentsPage() {
                       </div>
                     </div>
                     <div>
-                      <div className="text-text-muted">Properties Sold</div>
+                      <div className="text-text-muted">Properties</div>
                       <div className="font-semibold text-text">
-                        {agent.propertiesSold ||
-                          Math.floor(Math.random() * 100)}
+                        {agent.propertiesCount ||
+                          Math.floor(Math.random() * 10)}
                       </div>
                     </div>
                   </div>

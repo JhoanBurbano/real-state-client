@@ -10,15 +10,24 @@ import {
   MapPin,
   Eye,
   Star,
+  Home,
+  MapPin as City,
 } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
-import { useProperties } from '@/hooks/useProperties'
-import { useAgents } from '@/hooks/useAgents'
-import { millionAPI } from '@/lib/api/million-api'
+import { useOwnerStats } from '@/hooks/useOwnerStats'
+import { useOwnerProperties } from '@/hooks/useOwnerProperties'
 
 export function DashboardStats() {
-  const { properties, loading: propertiesLoading } = useProperties()
-  const { agents, loading: agentsLoading } = useAgents()
+  const {
+    stats: ownerStats,
+    isLoading: statsLoading,
+    formatCurrency,
+    getPercentage,
+    getTopPropertyType,
+    getTopCity,
+  } = useOwnerStats()
+  const { properties, isLoading: propertiesLoading } = useOwnerProperties()
+
   const [stats, setStats] = useState([
     {
       title: 'Total Properties',
@@ -26,7 +35,7 @@ export function DashboardStats() {
       change: '+0%',
       changeType: 'positive',
       icon: Building2,
-      description: 'Active listings',
+      description: 'Total listings',
     },
     {
       title: 'Active Properties',
@@ -34,33 +43,34 @@ export function DashboardStats() {
       change: '+0',
       changeType: 'positive',
       icon: Calendar,
-      description: 'This week',
+      description: 'Currently active',
     },
     {
-      title: 'Active Agents',
-      value: '0',
-      change: '+0',
-      changeType: 'positive',
-      icon: Users,
-      description: 'Total agents',
-    },
-    {
-      title: 'Total Views',
-      value: '0',
+      title: 'Total Value',
+      value: '$0',
       change: '+0%',
       changeType: 'positive',
-      icon: Eye,
-      description: 'Property views',
+      icon: DollarSign,
+      description: 'Portfolio value',
+    },
+    {
+      title: 'Average Price',
+      value: '$0',
+      change: '+0%',
+      changeType: 'positive',
+      icon: TrendingUp,
+      description: 'Per property',
     },
   ])
 
   useEffect(() => {
     const updateStats = () => {
-      const activeProperties = properties.filter(
-        p => p.status === 'Active'
-      ).length
-      const totalProperties = properties.length
-      const totalAgents = agents.length
+      if (!ownerStats) return
+
+      const totalProperties = ownerStats.totalProperties
+      const activeProperties = ownerStats.activeProperties
+      const totalValue = ownerStats.totalValue
+      const averagePrice = ownerStats.averagePrice
 
       setStats([
         {
@@ -69,7 +79,7 @@ export function DashboardStats() {
           change: totalProperties > 0 ? `+${totalProperties}` : '0',
           changeType: 'positive',
           icon: Building2,
-          description: 'Active listings',
+          description: 'Total listings',
         },
         {
           title: 'Active Properties',
@@ -77,31 +87,31 @@ export function DashboardStats() {
           change: activeProperties > 0 ? `+${activeProperties}` : '0',
           changeType: 'positive',
           icon: Calendar,
-          description: 'This week',
+          description: 'Currently active',
         },
         {
-          title: 'Active Agents',
-          value: totalAgents.toString(),
-          change: totalAgents > 0 ? `+${totalAgents}` : '0',
+          title: 'Total Value',
+          value: formatCurrency(totalValue),
+          change: totalValue > 0 ? '+15%' : '0%',
           changeType: 'positive',
-          icon: Users,
-          description: 'Total agents',
+          icon: DollarSign,
+          description: 'Portfolio value',
         },
         {
-          title: 'Total Views',
-          value: (totalProperties * 50).toString(), // Mock calculation
-          change: totalProperties > 0 ? '+15%' : '0%',
+          title: 'Average Price',
+          value: formatCurrency(averagePrice),
+          change: averagePrice > 0 ? '+8%' : '0%',
           changeType: 'positive',
-          icon: Eye,
-          description: 'Property views',
+          icon: TrendingUp,
+          description: 'Per property',
         },
       ])
     }
 
-    if (!propertiesLoading && !agentsLoading) {
+    if (!statsLoading && !propertiesLoading) {
       updateStats()
     }
-  }, [properties, agents, propertiesLoading, agentsLoading])
+  }, [ownerStats, formatCurrency, statsLoading, propertiesLoading])
 
   const recentActivities = [
     {
@@ -188,6 +198,73 @@ export function DashboardStats() {
           )
         })}
       </div>
+
+      {/* Additional Stats */}
+      {ownerStats && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card className="p-6">
+            <div className="flex items-center space-x-3">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Home className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-text">
+                  {getTopPropertyType() || 'N/A'}
+                </h3>
+                <p className="text-sm text-text-muted">
+                  Tipo de propiedad más común
+                </p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {ownerStats.propertiesByType[getTopPropertyType() || ''] || 0}
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center space-x-3">
+              <div className="p-3 bg-green-100 rounded-lg">
+                <City className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-text">
+                  {getTopCity() || 'N/A'}
+                </h3>
+                <p className="text-sm text-text-muted">
+                  Ciudad con más propiedades
+                </p>
+                <p className="text-2xl font-bold text-green-600">
+                  {ownerStats.propertiesByCity[getTopCity() || ''] || 0}
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center space-x-3">
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <DollarSign className="h-6 w-6 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-text">
+                  Propiedades Vendidas
+                </h3>
+                <p className="text-sm text-text-muted">Total de ventas</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {ownerStats.soldProperties}
+                </p>
+                <p className="text-xs text-text-muted">
+                  {getPercentage(
+                    ownerStats.soldProperties,
+                    ownerStats.totalProperties
+                  )}
+                  % del total
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Recent Activity and Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

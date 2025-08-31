@@ -65,7 +65,17 @@ export function useProperties() {
         console.log('⚠️ No properties returned from API')
       }
 
-      setProperties(response.items)
+      // Convert PropertyListDto to Property for compatibility
+      const convertedProperties = response.items.map(item => ({
+        ...item,
+        description: '', // PropertyListDto doesn't have description
+        isActive: true, // PropertyListDto doesn't have isActive
+        gallery: [], // PropertyListDto doesn't have gallery
+        ownerId: '', // PropertyListDto doesn't have ownerId
+        updatedAt: item.createdAt, // Use createdAt as fallback
+      })) as Property[]
+
+      setProperties(convertedProperties)
       setTotal(response.total)
       setCurrentPage(response.page)
       setTotalPages(Math.ceil(response.total / response.pageSize))
@@ -98,7 +108,8 @@ export function useProperties() {
             property.description.toLowerCase().includes(searchLower) ||
             property.address.toLowerCase().includes(searchLower) ||
             property.city.toLowerCase().includes(searchLower) ||
-            property.neighborhood.toLowerCase().includes(searchLower)
+            property.neighborhood?.toLowerCase().includes(searchLower) ||
+            false
 
           if (!matchesSearch) return false
         }
@@ -219,7 +230,17 @@ export function useProperties() {
           newPropertiesCount: response.items?.length || 0,
         })
 
-        setProperties(prev => [...prev, ...response.items])
+        // Convert PropertyListDto to Property for compatibility
+        const convertedProperties = response.items.map(item => ({
+          ...item,
+          description: '', // PropertyListDto doesn't have description
+          isActive: true, // PropertyListDto doesn't have isActive
+          gallery: [], // PropertyListDto doesn't have gallery
+          ownerId: '', // PropertyListDto doesn't have ownerId
+          updatedAt: item.createdAt, // Use createdAt as fallback
+        })) as Property[]
+
+        setProperties(prev => [...prev, ...convertedProperties])
         setCurrentPage(response.page)
         setTotalPages(Math.ceil(response.total / response.pageSize))
       } catch (err) {
@@ -248,11 +269,11 @@ export function useProperties() {
           id: property?.id,
           name: property?.name,
           cover: property?.cover,
-          media: property?.media,
+          gallery: property?.gallery,
           hasCover: !!property?.coverUrl,
-          hasMedia: property?.media && property?.media.length > 0,
+          hasMedia: property?.gallery && property?.gallery.length > 0,
           coverUrl: property?.coverUrl,
-          firstMediaUrl: property?.media?.[0]?.url,
+          firstMediaUrl: property?.gallery?.[0]?.url,
         })
         return property
       } catch (err) {
@@ -387,11 +408,11 @@ export function useProperty(propertyId: string | null) {
           id: foundProperty?.id,
           name: foundProperty?.name,
           cover: foundProperty?.cover,
-          media: foundProperty?.media,
+          gallery: foundProperty?.gallery,
           hasCover: !!foundProperty?.coverUrl,
-          hasMedia: foundProperty?.media && foundProperty?.media.length > 0,
+          hasMedia: foundProperty?.gallery && foundProperty?.gallery.length > 0,
           coverUrl: foundProperty?.coverUrl,
-          firstMediaUrl: foundProperty?.media?.[0]?.url,
+          firstMediaUrl: foundProperty?.gallery?.[0]?.url,
         })
 
         if (foundProperty) {
